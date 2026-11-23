@@ -1,0 +1,9 @@
+/node_modules/
+/build/
+/.reference/
+.env
+.env.*.local
+*.log
+.cache/
+.idea/
+/tg-bot/data/

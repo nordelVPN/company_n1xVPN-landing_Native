@@ -1,0 +1,51 @@
+<dialog class="checkout-dialog" data-wishlist aria-labelledby="order-title" aria-describedby="wishlist-description">
+  <button type="button" class="dialog-close" data-wishlist-close aria-label="Close" data-i18n-aria-label="wishlist.close">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M19 5 5 19" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+  </button>
+  <header class="checkout-heading">
+    <h2 data-i18n="checkout.title" id="order-title">Complete your order.</h2>
+    <span class="checkout-stripes" aria-hidden="true"></span>
+    <p class="checkout-description" data-i18n="checkout.description" id="wishlist-description">Choose your plan and review your order.</p>
+  </header>
+  <form data-order-form class="checkout-grid">
+    <div class="checkout-steps checkout-panel">
+      <svg class="checkout-panel__frame" viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true"><path d="M42 1H990Q999 1 999 10V945L945 999H10Q1 999 1 990V65Z" vector-effect="non-scaling-stroke"/></svg>
+      <div class="checkout-step">
+        <label for="order-email" class="step-title"><span data-i18n="checkout.email">1. Your email</span></label>
+        <div class="step-content">
+          <input id="order-email" name="email" type="email" autocomplete="email" placeholder="Enter your email address" data-i18n-placeholder="checkout.emailPlaceholder" required>
+        </div>
+      </div>
+      <fieldset class="checkout-step">
+        <legend class="step-title"><span data-i18n="checkout.plan">2. Choose a plan</span></legend>
+        <div class="step-content plan-options">
+          <label class="plan-choice"><input type="radio" name="order-plan" value="monthly" checked><span data-i18n="checkout.monthly">Monthly Plan</span></label>
+          <label class="plan-choice"><input type="radio" name="order-plan" value="annual"><span data-i18n="checkout.annual">Annual Plan</span></label>
+          <label class="plan-choice"><input type="radio" name="order-plan" value="twoYear"><span data-i18n="checkout.twoYear">Two-Year Plan</span></label>
+        </div>
+      </fieldset>
+      <div class="checkout-step">
+        <label for="order-payment" class="step-title"><span data-i18n="checkout.payment">3. Choose a payment method</span></label>
+        <div class="step-content payment-select">
+          <select id="order-payment" name="payment" required>
+            <option value="" data-i18n="checkout.selectPayment">Select a payment method</option>
+            <option value="demo" data-i18n="checkout.demoPayment">Demo — no payment</option>
+          </select>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 9 7 7 7-7" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        </div>
+      </div>
+    </div>
+    <aside class="order-summary checkout-panel">
+      <svg class="checkout-panel__frame" viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true"><path d="M42 1H990Q999 1 999 10V945L945 999H10Q1 999 1 990V65Z" vector-effect="non-scaling-stroke"/></svg>
+      <div class="order-brand"><span class="checkout-stripes" aria-hidden="true"></span>{{> brand-x}}<span class="checkout-stripes" aria-hidden="true"></span></div>
+      <h3 data-i18n="checkout.summary">Order summary</h3>
+      <dl>
+        <div><dt data-i18n="checkout.planLabel">Plan</dt><dd data-order-plan>Monthly Plan</dd></div>
+        <div><dt data-i18n="checkout.billing">Billing</dt><dd data-i18n="checkout.recurring">Recurring</dd></div>
+        <div class="order-total"><dt data-i18n="checkout.total">Total</dt><dd data-i18n="checkout.shown">Shown at checkout</dd></div>
+      </dl>
+      <button class="button checkout-continue" type="submit"><span data-i18n="checkout.continue">Continue</span></button>
+      <p data-i18n="checkout.notice" data-order-notice role="status" hidden>Demo only. No payment has been made.</p>
+    </aside>
+  </form>
+</dialog>

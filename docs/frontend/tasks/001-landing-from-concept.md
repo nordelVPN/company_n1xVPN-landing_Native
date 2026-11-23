@@ -5,6 +5,8 @@
 - **Проект-исходник (референс):** [nordelVPN/company_nordel-landing_Native](https://github.com/nordelVPN/company_nordel-landing_Native).
 - **Цель:** реализовать единый статический лендинг **N1X VPN** (`index.html`) из 5 последовательных секций на стеке Webpack 5 + Handlebars + SCSS + vanilla JS в тёмной теме по дизайн-концептам из `docs/assets/images/concept/`, подключить общий `header`, `footer`, интерактивное демо-превью и модальное окно вишлиста.
 
+> **Поправка [`FRONT-003`](003-corrections.md).** Для перечисленных там экранов выполняется FRONT-003. Модалка `[data-wishlist-open]` — экран `Complete your order.` из `05-checkout.png`: плавное открытие, кнопка `.dialog-close` — иконка. Добавляется `account.html` по `06-account.png`. Шрифты сверяются заново. В `.three-grid` иконки и размер текста приводятся к макетам. В `#plans` три карточки по `04-plans.png`, `.brand-x` крупнее, у числовой цены обязателен знак `€`.
+
 ## Исходные материалы
 
 Эталонные дизайн-концепты в [`docs/assets/images/concept/`](../../assets/images/concept/):
@@ -45,15 +47,15 @@
   2. `1 month` (`1 мес`) — цена `7`, `5 devices`;
   3. `3 months` (`3 месяца`) — цена `15`, `5 devices`, `5 per month`;
   4. `12 months` (`12 месяцев`) — цена `55`, `5 devices`, `4.58 per month`.
-  Сетка: `4` колонки (`> 1100px`) → `2` (`901–1100px`) → `1` (`<= 900px`). Выбор любого тарифа открывает окно вишлиста (`data-wishlist-open`); оплата не реализуется.
+  Сетка: `4` колонки (`> 1100px`) → `2` (`901–1100px`) → `1` (`<= 900px`). Выбор любого тарифа открывает окно вишлиста (`data-wishlist-open`); оплата не реализуется. С [`FRONT-003`](003-corrections.md) эти четыре тарифа заменяются тремя карточками `04-plans.png`: `/ Monthly`, `/ 6 months`, `/ 12 months`, строка `Price shown at checkout`. Числовая цена без знака `€` не показывается.
 - **Секция 5 — Support (`#support`, `support.hbs`, `07-support.png`):** заголовок `How can we / help?`, описание, **рабочий `<input type="search">`** (`Search support` — без логики поиска на данном этапе), крупный знак `X`, 3 карточки (`Getting started`, `Account & subscription`, `Troubleshooting`), нижняя кнопка `Contact support` (`data-wishlist-open`) + подпись.
-- **Wishlist Dialog (`wishlist.hbs`, `modules/wishlist.js`):** нативный `<dialog data-wishlist>`, открытие по `data-wishlist-open`, закрытие кнопкой / `Escape` / кликом по backdrop, возврат фокуса инициатору; при пустом `wishlist.telegramUrl` кнопка перехода отключена с честным пояснением.
+- **Wishlist Dialog (`wishlist.hbs`, `modules/wishlist.js`):** нативный `<dialog data-wishlist>`, открытие по `data-wishlist-open`, закрытие кнопкой / `Escape` / кликом по backdrop, возврат фокуса инициатору; при пустом `wishlist.telegramUrl` кнопка перехода отключена с честным пояснением. С [`FRONT-003`](003-corrections.md) видимое содержимое этого диалога — экран `Complete your order.`, текст вишлиста Telegram в нём не показывать. PHP-бот остаётся.
 - **Footer (`footer.hbs`, `styles/base.scss`):** логотип `X N1X VPN`, якорные ссылки (`The app`, `Why N1X`, `Plans`, `Support`), кнопка `Get N1X` (`data-wishlist-open`), юридические заглушки `Privacy Policy` и `Terms of Use` (`href="#"`), копирайт `© {{year}} N1X VPN. All rights reserved.`.
 
 ### 3. Вне объёма задачи (не реализовывать в FRONT-001)
 - Светлая тема и переключатель тем.
-- Оплата и форма `05-checkout.png`.
-- Личный кабинет `account-page/06-account.png`.
+- Живое списание и платёжный API. Статический экран `05-checkout.png` в модалке — [задача `FRONT-003`](003-corrections.md).
+- API личного кабинета. Статическая страница `account-page/06-account.png` — [задача `FRONT-003`](003-corrections.md).
 - Поисковая логика по базе знаний в `#support`.
 - Мобильные экраны `mobile/03..08.png`.
 
@@ -63,6 +65,8 @@
 - Сохранять термин «вишлист»; не выдумывать адрес бота, домен и валюту.
 
 ## Критерии приёмки
+
+> Критерии четырёх тарифов без валюты и содержимого диалога вишлиста перекрыты [`FRONT-003`](003-corrections.md).
 
 - [ ] Выявлен и подключён шрифт с фото концептов; логотип `X N1X VPN`, знак `X` и иконки сняты с `logo-lime-x-concept.png` и концептов в inline SVG.
 - [ ] Все 5 секций собраны на единой странице `index.html`; EN-тексты точно соответствуют [copy-and-locales.md](../copy-and-locales.md).

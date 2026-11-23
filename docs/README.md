@@ -27,6 +27,7 @@
 | Frontend: тексты и словарь | [frontend/copy-and-locales.md](frontend/copy-and-locales.md) | Готовая спецификация точных EN-текстов с фото, 4 тарифа, `src/data/index.js` и словарь `locales.json` (`en`/`ru`) |
 | Задача FRONT-001 | [frontend/tasks/001-landing-from-concept.md](frontend/tasks/001-landing-from-concept.md) | ТЗ на реализацию единого лендинга N1X VPN по концептам, адаптив, доступность и критерии приёмки |
 | Задача FRONT-002 | [frontend/tasks/002-localization.md](frontend/tasks/002-localization.md) | ТЗ на переключение языка EN/RU без перезагрузки (`i18n.js` + `locales.json`) |
+| Задача FRONT-003 | [frontend/tasks/003-corrections.md](frontend/tasks/003-corrections.md) | Правки: модалка `Complete your order`, страница аккаунта, шрифты, `.three-grid`, тарифы `#plans`, знак `€` |
 | Backend: Telegram-бот | [backend/telegram-wishlist.md](backend/telegram-wishlist.md) | Архитектура PHP 8.4 бэкенда вишлиста, HTTP webhook, long polling, JSON-хранилище, проверки и ограничения |
 | Backend: Docker Compose | [backend/docker-compose.md](backend/docker-compose.md) | Локальный запуск `site` + `bot` + `ngrok` (`localhost:4040`), регистрация webhook, ручное тестирование и диагностика |
 | DevOps и CI/CD | [devops/deployment-ci.md](devops/deployment-ci.md) | GitHub Actions, публикация на GitHub Pages, Docker-образы, откат, требования к целевому хостингу |
@@ -50,8 +51,8 @@
 
 ## Что не входит в текущий этап (вынесено в будущие этапы)
 
-- Реальная оплата, биллинг и checkout (`05-checkout.png` — референс следующего этапа).
-- Авторизация и личный кабинет (`account-page/06-account.png` — референс этапа единого API).
+- Живой платёж и биллинг. Статический экран `05-checkout.png` делается в [задаче FRONT-003](frontend/tasks/003-corrections.md).
+- Авторизация и API личного кабинета. Статическая страница `account-page/06-account.png` делается в [задаче FRONT-003](frontend/tasks/003-corrections.md).
 - Серверная часть VPN, выдача VPN-конфигураций, связка серверов, реальный список серверов.
 - Клиентские приложения Android, iOS, macOS, Windows (`mobile/01..08.png` — референс приложений; `01-home.png` и `02-connected.png` служат ориентиром для интерактивного демо-превью на лендинге).
 
@@ -59,7 +60,7 @@
 
 1. **Адрес и токен тестового Telegram-бота + `NGROK_AUTHTOKEN`** — добавляются в локальный `.env` (не в Git) для финального подключения кнопки вишлиста и сквозного тестирования Docker Compose.
 2. **Домен, `canonical` URL, доступы к целевому хостингу и офшорным IP** — передаются вне репозитория к этапу production-размещения.
-3. **Валюта тарифов** — при появлении решения добавить отображение валюты отдельно.
+3. **Валюта тарифов** — знак `€` у числовой цены задан в [задаче FRONT-003](frontend/tasks/003-corrections.md). Сумму, которой нет на макете, не выдумывать.
 
 ## Базовые правила репозитория
 

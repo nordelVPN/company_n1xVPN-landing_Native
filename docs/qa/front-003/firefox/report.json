@@ -1,0 +1,160 @@
+{
+  "engine": "firefox",
+  "checks": [
+    {
+      "width": 375,
+      "lang": "en",
+      "measurements": {
+        "width": 375,
+        "scrollWidth": 375,
+        "outside": [],
+        "motion": "auto"
+      },
+      "interactions": "passed"
+    },
+    {
+      "width": 375,
+      "lang": "ru",
+      "measurements": {
+        "width": 375,
+        "scrollWidth": 375,
+        "outside": [],
+        "motion": "auto"
+      },
+      "interactions": "passed"
+    },
+    {
+      "width": 768,
+      "lang": "en",
+      "measurements": {
+        "width": 768,
+        "scrollWidth": 768,
+        "outside": [],
+        "motion": "auto"
+      },
+      "interactions": "passed"
+    },
+    {
+      "width": 768,
+      "lang": "ru",
+      "measurements": {
+        "width": 768,
+        "scrollWidth": 768,
+        "outside": [],
+        "motion": "auto"
+      },
+      "interactions": "passed"
+    },
+    {
+      "width": 1440,
+      "lang": "en",
+      "measurements": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "outside": [],
+        "motion": "auto"
+      },
+      "interactions": "passed"
+    },
+    {
+      "width": 1440,
+      "lang": "ru",
+      "measurements": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "outside": [],
+        "motion": "auto"
+      },
+      "interactions": "passed"
+    },
+    {
+      "width": 375,
+      "lang": "en",
+      "pages": "login -> account -> order -> logout",
+      "passed": true
+    },
+    {
+      "width": 375,
+      "lang": "ru",
+      "pages": "login -> account -> order -> logout",
+      "passed": true
+    },
+    {
+      "width": 768,
+      "lang": "en",
+      "pages": "login -> account -> order -> logout",
+      "passed": true
+    },
+    {
+      "width": 768,
+      "lang": "ru",
+      "pages": "login -> account -> order -> logout",
+      "passed": true
+    },
+    {
+      "width": 1440,
+      "lang": "en",
+      "pages": "login -> account -> order -> logout",
+      "passed": true
+    },
+    {
+      "width": 1440,
+      "lang": "ru",
+      "pages": "login -> account -> order -> logout",
+      "passed": true
+    }
+  ],
+  "comparisons": [
+    {
+      "name": "home",
+      "width": 1672,
+      "height": 941,
+      "meanChannelDifference": 38.704131264544316,
+      "note": "Diagnostic only: no visual acceptance threshold."
+    },
+    {
+      "name": "the-app",
+      "width": 1672,
+      "height": 941,
+      "meanChannelDifference": 44.72055013754074,
+      "note": "Diagnostic only: no visual acceptance threshold."
+    },
+    {
+      "name": "why-n1x",
+      "width": 1672,
+      "height": 941,
+      "meanChannelDifference": 39.826662861627064,
+      "note": "Diagnostic only: no visual acceptance threshold."
+    },
+    {
+      "name": "plans",
+      "width": 1671,
+      "height": 941,
+      "meanChannelDifference": 39.2764588902011,
+      "note": "Diagnostic only: no visual acceptance threshold."
+    },
+    {
+      "name": "support",
+      "width": 1671,
+      "height": 941,
+      "meanChannelDifference": 52.51635736458216,
+      "note": "Diagnostic only: no visual acceptance threshold."
+    },
+    {
+      "name": "account",
+      "width": 1672,
+      "height": 941,
+      "meanChannelDifference": 27.29601809809036,
+      "note": "Diagnostic only: no visual acceptance threshold."
+    },
+    {
+      "name": "checkout",
+      "width": 1672,
+      "height": 941,
+      "meanChannelDifference": 28.04321707200084,
+      "note": "Diagnostic only: no visual acceptance threshold."
+    }
+  ],
+  "errors": [],
+  "version": "159.0"
+}

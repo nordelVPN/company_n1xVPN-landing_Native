@@ -1,0 +1,18 @@
+{
+  "checks": [
+    "lint common",
+    "lint bot",
+    "lint webhook",
+    "lint webhook-admin",
+    "atomic storage, update, createdAt, corrupt JSON preservation",
+    "GET /health 200",
+    "GET /webhook 404",
+    "GET /common.php 404",
+    "POST /webhook 403",
+    "POST /webhook 400",
+    "POST /webhook 400",
+    "POST /webhook 200",
+    "POST /webhook 413"
+  ],
+  "errors": []
+}

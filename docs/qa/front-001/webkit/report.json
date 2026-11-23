@@ -1,0 +1,110 @@
+{
+  "engine": "webkit",
+  "checks": [
+    {
+      "width": 375,
+      "lang": "en",
+      "measurements": {
+        "width": 375,
+        "scrollWidth": 375,
+        "outside": [],
+        "motion": "auto"
+      },
+      "interactions": "passed"
+    },
+    {
+      "width": 375,
+      "lang": "ru",
+      "measurements": {
+        "width": 375,
+        "scrollWidth": 375,
+        "outside": [],
+        "motion": "auto"
+      },
+      "interactions": "passed"
+    },
+    {
+      "width": 768,
+      "lang": "en",
+      "measurements": {
+        "width": 768,
+        "scrollWidth": 768,
+        "outside": [],
+        "motion": "auto"
+      },
+      "interactions": "passed"
+    },
+    {
+      "width": 768,
+      "lang": "ru",
+      "measurements": {
+        "width": 768,
+        "scrollWidth": 768,
+        "outside": [],
+        "motion": "auto"
+      },
+      "interactions": "passed"
+    },
+    {
+      "width": 1440,
+      "lang": "en",
+      "measurements": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "outside": [],
+        "motion": "auto"
+      },
+      "interactions": "passed"
+    },
+    {
+      "width": 1440,
+      "lang": "ru",
+      "measurements": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "outside": [],
+        "motion": "auto"
+      },
+      "interactions": "passed"
+    }
+  ],
+  "comparisons": [
+    {
+      "name": "home",
+      "width": 1672,
+      "height": 941,
+      "meanChannelDifference": 35.85244009816833,
+      "note": "Diagnostic only: no visual acceptance threshold."
+    },
+    {
+      "name": "the-app",
+      "width": 1672,
+      "height": 941,
+      "meanChannelDifference": 44.46347755196125,
+      "note": "Diagnostic only: no visual acceptance threshold."
+    },
+    {
+      "name": "why-n1x",
+      "width": 1672,
+      "height": 941,
+      "meanChannelDifference": 38.24444370998988,
+      "note": "Diagnostic only: no visual acceptance threshold."
+    },
+    {
+      "name": "plans",
+      "width": 1671,
+      "height": 941,
+      "meanChannelDifference": 36.96715956154805,
+      "note": "Diagnostic only: no visual acceptance threshold."
+    },
+    {
+      "name": "support",
+      "width": 1671,
+      "height": 941,
+      "meanChannelDifference": 50.70339879331803,
+      "note": "Diagnostic only: no visual acceptance threshold."
+    }
+  ],
+  "errors": [],
+  "version": "27.2"
+}

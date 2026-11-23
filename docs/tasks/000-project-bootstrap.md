@@ -10,7 +10,8 @@
 1. **`BOOTSTRAP-000` (эта задача)** — каркас репозитория, сборки, Docker, стартовые файлы `tg-bot/` и CI/CD.
 2. **[`FRONT-001`](../frontend/tasks/001-landing-from-concept.md)** — вёрстка единого лендинга `index.html` по дизайн-концептам N1X VPN (только тёмная тема, 5 секций + общий `header`, `footer` и `<dialog>` вишлиста).
 3. **[`FRONT-002`](../frontend/tasks/002-localization.md)** — подключение переключения языка `EN / RU` без перезагрузки по [спецификации текстов](../frontend/copy-and-locales.md).
-4. **Интеграция `.env` и сквозная проверка** — после получения адреса и токена тестового бота + `NGROK_AUTHTOKEN` заполнить `.env`, прописать `wishlist.telegramUrl` и провести сквозной тест по [docker-compose.md](../backend/docker-compose.md) и [verification-plan.md](../qa/verification-plan.md).
+4. **[`FRONT-003`](../frontend/tasks/003-corrections.md)** — правки после сверки с макетами: модалка `Complete your order.` по `05-checkout.png` (плавное открытие, `.dialog-close` — иконка), страница `account.html` по `06-account.png`, повторная сверка шрифтов, иконки и размер текста `.three-grid`, тексты и карточки `#plans`, крупнее `.brand-x`, знак `€` у числовой цены.
+5. **Интеграция `.env` и сквозная проверка** — после получения адреса и токена тестового бота + `NGROK_AUTHTOKEN` заполнить `.env`, прописать `wishlist.telegramUrl` и провести сквозной тест по [docker-compose.md](../backend/docker-compose.md) и [verification-plan.md](../qa/verification-plan.md).
 
 ## Объём работ
 
