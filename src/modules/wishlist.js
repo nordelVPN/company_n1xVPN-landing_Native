@@ -1,4 +1,10 @@
 const { t } = require('./i18n');
+const plans = {
+  trial: { index: 0, billing: 'checkout.once' },
+  next: { index: 1, billing: 'checkout.recurring' },
+  three: { index: 2, billing: 'checkout.recurring' },
+  twelve: { index: 3, billing: 'checkout.recurring' }
+};
 const dialog = document.querySelector('[data-wishlist]');
 if (dialog) {
   let opener;
@@ -6,7 +12,10 @@ if (dialog) {
   const form = dialog.querySelector('[data-order-form]');
   const update = () => {
     const selected = form.querySelector('[name="order-plan"]:checked');
-    dialog.querySelector('[data-order-plan]').textContent = t('checkout.' + selected.value);
+    const plan = plans[selected.value];
+    dialog.querySelector('[data-order-plan]').textContent = t('pricing.plans.' + plan.index + '.name');
+    dialog.querySelector('[data-order-billing]').textContent = t(plan.billing);
+    dialog.querySelector('[data-order-total]').textContent = selected.dataset.price;
   };
   const close = () => {
     if (closing || !dialog.open) return;
@@ -20,6 +29,8 @@ if (dialog) {
     if (dialog.open) return;
     opener = button;
     form.reset();
+    const id = Object.prototype.hasOwnProperty.call(plans, button.dataset.selectPlan) ? button.dataset.selectPlan : 'trial';
+    form.querySelector('[name="order-plan"][value="' + id + '"]').checked = true;
     dialog.querySelector('[data-order-notice]').hidden = true;
     update();
     dialog.showModal();

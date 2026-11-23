@@ -4,7 +4,7 @@
 
 > **Правила копирайта:**
 > - Все базовые EN-тексты секций (`01-home`, `02-the-app`, `03-why-n1x`, `04-plans`, `07-support`, `mobile/01`, `mobile/02`) переносятся **в точности с фото концептов**.
-> - Для блока тарифов (`04-plans`) используются **4 утверждённых тарифа владельца** (см. раздел ниже); валюта не подставляется до отдельного указания.
+> - Для блока тарифов (`04-plans`) используются **4 утверждённых тарифа владельца** (см. раздел ниже); у каждой денежной суммы знак `€` сразу перед числом.
 > - В русской версии сохраняется термин **«вишлист»** (не `waitlist`).
 > - Названия бренда **N1X VPN** / **N1X** не переводятся.
 
@@ -16,12 +16,12 @@
 
 | # | Тариф (RU) | Тариф (EN) | Цена | Устройства | Возможности / примечание (RU) | Возможности / примечание (EN) |
 |---|---|---|---|---|---|---|
-| 1 | Триал — 1 мес | Trial — 1 month | `1` | `5` | Один раз для нового пользователя | Once for a new user |
-| 2 | 1 мес | 1 month | `7` | `5` | — | — |
-| 3 | 3 месяца | 3 months | `15` | `5` | 5 в месяц | 5 per month |
-| 4 | 12 месяцев | 12 months | `55` | `5` | 4.58 в месяц | 4.58 per month |
+| 1 | Триал - 1 мес | Trial - 1 month | `€1` | `5` | Один раз для нового пользователя | Once for a new user |
+| 2 | Далее - 1мес | Next - 1 month | `€7` | `5` | — | — |
+| 3 | 3 месяца | 3 months | `€15` | `5` | €5 в месяц | €5 per month |
+| 4 | 12 месяцев | 12 months | `€55` | `5` | €4.58 в месяц | €4.58 per month |
 
-> Валюта не указана — выводить цену как число (`1`, `7`, `15`, `55`) без знака `€`/`$`/`₽`. Выбор любого тарифа открывает модальное окно вишлиста (`data-wishlist-open`), оплата в MVP не реализована.
+> Цена и помесячная ставка выводятся со знаком `€` сразу перед числом. Число устройств `€` не получает. Выбор любого тарифа открывает модальное окно вишлиста (`data-wishlist-open`), оплата в MVP не реализована.
 
 ---
 
@@ -124,34 +124,34 @@ module.exports = {
     plans: [
       {
         id: 'trial',
-        name: 'Trial — 1 month',
-        price: '1',
+        name: 'Trial - 1 month',
+        price: '€1',
         devices: '5 devices',
         note: 'Once for a new user',
         button: 'Choose Trial'
       },
       {
         id: 'monthly',
-        name: '1 month',
-        price: '7',
+        name: 'Next - 1 month',
+        price: '€7',
         devices: '5 devices',
         note: '',
-        button: 'Choose 1 Month'
+        button: 'Choose Next'
       },
       {
         id: 'quarterly',
         name: '3 months',
-        price: '15',
+        price: '€15',
         devices: '5 devices',
-        note: '5 per month',
+        note: '€5 per month',
         button: 'Choose 3 Months'
       },
       {
         id: 'annual',
         name: '12 months',
-        price: '55',
+        price: '€55',
         devices: '5 devices',
-        note: '4.58 per month',
+        note: '€4.58 per month',
         button: 'Choose 12 Months'
       }
     ]
@@ -274,21 +274,21 @@ module.exports = {
     "pricing.title": "Choose your plan.",
     "pricing.description": "A universal VPN for play, work, and everyday online life.",
     "pricing.note": "Currency and billing terms will be confirmed. Plan selection opens the wishlist; payment is not available yet.",
-    "pricing.plans.0.name": "Trial — 1 month",
+    "pricing.plans.0.name": "Trial - 1 month",
     "pricing.plans.0.devices": "5 devices",
     "pricing.plans.0.note": "Once for a new user",
     "pricing.plans.0.button": "Choose Trial",
-    "pricing.plans.1.name": "1 month",
+    "pricing.plans.1.name": "Next - 1 month",
     "pricing.plans.1.devices": "5 devices",
     "pricing.plans.1.note": "",
-    "pricing.plans.1.button": "Choose 1 Month",
+    "pricing.plans.1.button": "Choose Next",
     "pricing.plans.2.name": "3 months",
     "pricing.plans.2.devices": "5 devices",
-    "pricing.plans.2.note": "5 per month",
+    "pricing.plans.2.note": "€5 per month",
     "pricing.plans.2.button": "Choose 3 Months",
     "pricing.plans.3.name": "12 months",
     "pricing.plans.3.devices": "5 devices",
-    "pricing.plans.3.note": "4.58 per month",
+    "pricing.plans.3.note": "€4.58 per month",
     "pricing.plans.3.button": "Choose 12 Months",
 
     "support.line0": "How can we",
@@ -386,21 +386,21 @@ module.exports = {
     "pricing.title": "Выберите тариф.",
     "pricing.description": "Универсальный VPN для игр, работы и повседневной жизни в сети.",
     "pricing.note": "Валюта и условия оплаты будут уточнены. Выбор тарифа открывает вишлист; оплата пока не подключена.",
-    "pricing.plans.0.name": "Триал — 1 мес",
+    "pricing.plans.0.name": "Триал - 1 мес",
     "pricing.plans.0.devices": "5 устройств",
     "pricing.plans.0.note": "Один раз для нового пользователя",
-    "pricing.plans.0.button": "Выбрать Триал",
-    "pricing.plans.1.name": "1 мес",
+    "pricing.plans.0.button": "Выбрать триал",
+    "pricing.plans.1.name": "Далее - 1мес",
     "pricing.plans.1.devices": "5 устройств",
     "pricing.plans.1.note": "",
-    "pricing.plans.1.button": "Выбрать 1 мес",
+    "pricing.plans.1.button": "Выбрать далее",
     "pricing.plans.2.name": "3 месяца",
     "pricing.plans.2.devices": "5 устройств",
-    "pricing.plans.2.note": "5 в месяц",
+    "pricing.plans.2.note": "€5 в месяц",
     "pricing.plans.2.button": "Выбрать 3 месяца",
     "pricing.plans.3.name": "12 месяцев",
     "pricing.plans.3.devices": "5 устройств",
-    "pricing.plans.3.note": "4.58 в месяц",
+    "pricing.plans.3.note": "€4.58 в месяц",
     "pricing.plans.3.button": "Выбрать 12 месяцев",
 
     "support.line0": "Чем мы можем",

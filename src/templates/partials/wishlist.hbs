@@ -19,9 +19,10 @@
       <fieldset class="checkout-step">
         <legend class="step-title"><span data-i18n="checkout.plan">2. Choose a plan</span></legend>
         <div class="step-content plan-options">
-          <label class="plan-choice"><input type="radio" name="order-plan" value="monthly" checked><span data-i18n="checkout.monthly">Monthly Plan</span></label>
-          <label class="plan-choice"><input type="radio" name="order-plan" value="annual"><span data-i18n="checkout.annual">Annual Plan</span></label>
-          <label class="plan-choice"><input type="radio" name="order-plan" value="twoYear"><span data-i18n="checkout.twoYear">Two-Year Plan</span></label>
+          <label class="plan-choice"><input type="radio" name="order-plan" value="trial" data-price="€1" checked><span data-i18n="pricing.plans.0.name">Trial - 1 month</span></label>
+          <label class="plan-choice"><input type="radio" name="order-plan" value="next" data-price="€7"><span data-i18n="pricing.plans.1.name">Next - 1 month</span></label>
+          <label class="plan-choice"><input type="radio" name="order-plan" value="three" data-price="€15"><span data-i18n="pricing.plans.2.name">3 months</span></label>
+          <label class="plan-choice"><input type="radio" name="order-plan" value="twelve" data-price="€55"><span data-i18n="pricing.plans.3.name">12 months</span></label>
         </div>
       </fieldset>
       <div class="checkout-step">
@@ -40,9 +41,9 @@
       <div class="order-brand"><span class="checkout-stripes" aria-hidden="true"></span>{{> brand-x}}<span class="checkout-stripes" aria-hidden="true"></span></div>
       <h3 data-i18n="checkout.summary">Order summary</h3>
       <dl>
-        <div><dt data-i18n="checkout.planLabel">Plan</dt><dd data-order-plan>Monthly Plan</dd></div>
-        <div><dt data-i18n="checkout.billing">Billing</dt><dd data-i18n="checkout.recurring">Recurring</dd></div>
-        <div class="order-total"><dt data-i18n="checkout.total">Total</dt><dd data-i18n="checkout.shown">Shown at checkout</dd></div>
+        <div><dt data-i18n="checkout.planLabel">Plan</dt><dd data-order-plan>Trial - 1 month</dd></div>
+        <div><dt data-i18n="checkout.billing">Billing</dt><dd data-order-billing>Once for a new user</dd></div>
+        <div class="order-total"><dt data-i18n="checkout.total">Total</dt><dd data-order-total>€1</dd></div>
       </dl>
       <button class="button checkout-continue" type="submit"><span data-i18n="checkout.continue">Continue</span></button>
       <p data-i18n="checkout.notice" data-order-notice role="status" hidden>Demo only. No payment has been made.</p>

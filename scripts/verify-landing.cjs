@@ -105,7 +105,16 @@ function comparison(actualPath, referencePath, name) {
     await connect.click();
     await page.locator('[data-demo-info]').click();
     assert(await page.locator('[data-demo-notice]').isVisible());
-    assert.deepEqual(await page.locator('.price').allTextContents(),Array(3).fill(dict[lang]['plans.price']));
+    assert.equal(await page.locator('.plan-card').count(),4);
+    assert.deepEqual(await page.locator('.plan-card .price').allTextContents(),['€1','€7','€15','€55']);
+    for(let i=0;i<4;i++){
+     const card=page.locator('.plan-card').nth(i);
+     assert.equal(await card.locator('h3').textContent(),dict[lang]['pricing.plans.'+i+'.name']);
+     assert.equal(await card.locator('.plan-devices').textContent(),dict[lang]['pricing.plans.'+i+'.devices']);
+     assert.equal(await card.locator('.plan-note').count(),i===1?0:1);
+     if(i!==1)assert.equal(await card.locator('.plan-note').textContent(),dict[lang]['pricing.plans.'+i+'.note']);
+     assert.equal(await card.locator('.button').textContent(),dict[lang]['pricing.plans.'+i+'.button']);
+    }
     assert.equal(await page.locator('.pricing-note').count(),0);
     const search=page.locator('input[type=search]');
     await search.fill('test');assert.equal(await search.inputValue(),'test');
@@ -118,9 +127,22 @@ function comparison(actualPath, referencePath, name) {
      assert.equal(await page.locator('#order-title').textContent(),dict[lang]['checkout.title']);
      assert.equal(await page.locator('[data-wishlist-close]').innerText(),'');
      assert.equal(await page.locator('dialog').getAttribute('aria-describedby'),'wishlist-description');
-     assert.equal(await page.locator('[data-order-plan]').textContent(),dict[lang]['checkout.monthly']);
-     await page.locator('[value=annual]').check();
-     assert.equal(await page.locator('[data-order-plan]').textContent(),dict[lang]['checkout.annual']);
+     const planIds=['trial','next','three','twelve'];
+     const prices=['€1','€7','€15','€55'];
+     const pi=planIds.indexOf(await cta.getAttribute('data-select-plan')||'trial');
+     assert(pi>=0);
+     assert.equal(await page.locator('[name=order-plan]:checked').getAttribute('value'),planIds[pi]);
+     assert.equal(await page.locator('[data-order-plan]').textContent(),dict[lang]['pricing.plans.'+pi+'.name']);
+     assert.equal(await page.locator('[data-order-total]').textContent(),prices[pi]);
+     assert.equal(await page.locator('[data-order-billing]').textContent(),dict[lang][pi===0?'checkout.once':'checkout.recurring']);
+     await page.locator('[value=twelve]').check();
+     assert.equal(await page.locator('[data-order-plan]').textContent(),dict[lang]['pricing.plans.3.name']);
+     assert.equal(await page.locator('[data-order-total]').textContent(),'€55');
+     assert.equal(await page.locator('[data-order-billing]').textContent(),dict[lang]['checkout.recurring']);
+     await page.locator('[value=trial]').check();
+     assert.equal(await page.locator('[data-order-total]').textContent(),'€1');
+     assert.equal(await page.locator('[data-order-billing]').textContent(),dict[lang]['checkout.once']);
+     await page.locator('[value=twelve]').check();
      await page.locator('#order-email').fill('demo@example.com');
      await page.selectOption('#order-payment','demo');
      await page.locator('[data-order-form] button[type=submit]').click();
@@ -163,10 +185,11 @@ function comparison(actualPath, referencePath, name) {
     assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
     await page.screenshot({path:path.join(output,'account-'+lang+'-'+width+'.png'),fullPage:true});
     await page.locator('[data-wishlist-open]').first().click();
-    await page.locator('[value=twoYear]').check();
+    await page.locator('[value=three]').check();
     // Change language through the existing controller while the background is inert.
     await page.evaluate(lang=>{const select=document.querySelector('[data-language-select]');select.value=lang;select.dispatchEvent(new Event('change'));},lang==='en'?'ru':'en');
-    assert.equal(await page.locator('[data-order-plan]').textContent(),dict[lang==='en'?'ru':'en']['checkout.twoYear']);
+    assert.equal(await page.locator('[data-order-plan]').textContent(),dict[lang==='en'?'ru':'en']['pricing.plans.2.name']);
+    assert.equal(await page.locator('[data-order-total]').textContent(),'€15');
     await page.screenshot({path:path.join(output,'order-'+(lang==='en'?'ru':'en')+'-'+width+'.png'),fullPage:true});
     await page.keyboard.press('Escape');
     await page.locator('[data-account-action]').first().click();

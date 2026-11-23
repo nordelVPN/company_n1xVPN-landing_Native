@@ -5,7 +5,7 @@
 - **Основание:** перенос функционала локализации из проекта-исходника [nordelVPN/company_nordel-landing_Native](https://github.com/nordelVPN/company_nordel-landing_Native) (см. `src/modules/i18n.js`).
 - **Готовый словарь и ключи:** [copy-and-locales.md](../copy-and-locales.md).
 
-> **Поправка [`FRONT-003`](003-corrections.md).** Словарь этой задачи описывает исходные четыре тарифа и диалог вишлиста. Строки модалки `Complete your order.`, трёх карточек `#plans`, знака `€` и страницы `account.html` берутся из `FRONT-003`. Ключи `pricing.plans.0`…`pricing.plans.3` после неё не остаются. Переключение EN/RU без перезагрузки работает и на `account.html`.
+> **Поправка [`FRONT-003`](003-corrections.md).** Четыре тарифа `#plans`: второй — `Next - 1 month` / `Далее - 1мес`, цены `€1`, `€7`, `€15`, `€55`. Ключи `pricing.plans.0`…`pricing.plans.3` остаются. Строки модалки `Complete your order.` и страницы `account.html` берутся из `FRONT-003`. Переключение EN/RU без перезагрузки работает и на `account.html`.
 
 ## Задача
 

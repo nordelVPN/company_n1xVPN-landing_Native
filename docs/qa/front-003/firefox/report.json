@@ -130,7 +130,7 @@
       "name": "plans",
       "width": 1671,
       "height": 941,
-      "meanChannelDifference": 39.2764588902011,
+      "meanChannelDifference": 39.120434585274886,
       "note": "Diagnostic only: no visual acceptance threshold."
     },
     {
@@ -151,7 +151,7 @@
       "name": "checkout",
       "width": 1672,
       "height": 941,
-      "meanChannelDifference": 28.04321707200084,
+      "meanChannelDifference": 28.17942880338708,
       "note": "Diagnostic only: no visual acceptance threshold."
     }
   ],
