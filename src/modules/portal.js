@@ -37,7 +37,22 @@ if (sdk.mode === 'live' && document.querySelector('#plans')) {
 }
 
 var orderForm = document.querySelector('[data-order-form]');
+sdkFactory.initCheckoutReturnPolling(sdk);
+
 if (orderForm && sdk.mode === 'live') {
+  var getXProvider = function () { return null; };
+  var xProviderHost = orderForm.querySelector('[data-payment-providers]');
+  if (!xProviderHost) {
+    xProviderHost = document.createElement('div');
+    xProviderHost.className = 'payment-providers';
+    xProviderHost.setAttribute('data-payment-providers', '');
+    xProviderHost.hidden = true;
+    orderForm.insertBefore(xProviderHost, orderForm.querySelector('button[type="submit"]'));
+  }
+  sdkFactory.mountPaymentProviderSelector(sdk, xProviderHost).then(function (getter) {
+    if (typeof getter === 'function') getXProvider = getter;
+  });
+
   orderForm.addEventListener('submit', function (e) {
     e.preventDefault();
     var notice = orderForm.querySelector('[data-order-notice]');
@@ -46,12 +61,17 @@ if (orderForm && sdk.mode === 'live') {
       window.location.href = './login.html';
       return;
     }
+    var baseUrl = window.location.origin + window.location.pathname;
     sdk.checkout({
       plan_code: selected ? selected.value : 'quarterly',
-      payment_method: (orderForm.payment && orderForm.payment.value) || 'card'
-    }).then(function () {
-      setStatus(notice, 'Subscription activated! Redirecting...');
-      window.location.href = './account.html';
+      provider: getXProvider(),
+      payment_method: (orderForm.payment && orderForm.payment.value) || 'card',
+      return_url: baseUrl,
+      cancel_url: baseUrl + '?status=cancelled'
+    }).then(function (res) {
+      var target = res && res.checkout && res.checkout.checkout_url;
+      setStatus(notice, 'Redirecting to payment provider...');
+      window.location.href = target || './account.html';
     }).catch(function (err) {
       setStatus(notice, (err && err.message) || 'Checkout failed.');
     });
@@ -222,7 +242,7 @@ if (accountRoot) {
             tr.children[0].textContent = p.paid_at ? new Date(p.paid_at).toLocaleDateString() : '—';
             tr.children[1].textContent = p.plan_code;
             tr.children[2].textContent = '€' + ((p.final_amount_minor || 0) / 100).toFixed(2);
-            tr.children[3].textContent = p.status;
+            tr.children[3].textContent = sdkFactory.formatPaymentProvider(p.provider) + ' · ' + sdkFactory.formatPaymentStatus(p.status);
             billingEl.appendChild(tr);
           });
         }
