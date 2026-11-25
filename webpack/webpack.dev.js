@@ -1,1 +1,28 @@
-const common=require('./webpack.common');module.exports=(env,argv)=>({...common(env,{...argv,mode:'development'}),mode:'development',devServer:{static:'./build/dev',hot:true,open:true,port:3000}});
+const common = require('./webpack.common');
+
+module.exports = (env, argv) => {
+  const port = Number(process.env.PORT || 3003);
+  const serversApiUrl = process.env.SERVERS_API_URL || 'http://localhost:8082';
+  const brandSlug = process.env.BRAND_SLUG || 'n1x';
+  const brandToken = process.env.BRAND_API_TOKEN || '';
+
+  return {
+    ...common(env, { ...argv, mode: 'development' }),
+    mode: 'development',
+    devServer: {
+      static: './build/dev',
+      hot: true,
+      open: false,
+      port,
+      proxy: [
+        {
+          context: ['/_api/servers'],
+          target: serversApiUrl,
+          changeOrigin: true,
+          pathRewrite: { '^/_api/servers': '/api/v1/sites/' + brandSlug + '/servers' },
+          headers: brandToken ? { Authorization: 'Bearer ' + brandToken } : {}
+        }
+      ]
+    }
+  };
+};
