@@ -23,6 +23,7 @@ const server = http.createServer((req, res) => {
     res.end(error ? 'Not found' : body);
   });
 });
+async function newDemoContext(browser, opts){ const ctx = await browser.newContext(opts); await ctx.addInitScript(()=>{ window.__VPN_PORTAL_CONFIG__ = { mode: 'demo' }; }); return ctx; }
 const report = { engine: engineName, checks: [], comparisons: [], errors: [] };
 
 function comparison(actualPath, referencePath, name) {
@@ -58,7 +59,7 @@ function comparison(actualPath, referencePath, name) {
   browser = await engine.launch({headless:true,...(process.argv[3]?{channel:process.argv[3]}:{})});
   report.version = browser.version();
   for (const width of [375,768,1440]) {
-   const context = await browser.newContext({viewport:{width,height:900},reducedMotion:'reduce'});
+   const context = await newDemoContext(browser, {viewport:{width,height:900},reducedMotion:'reduce'});
    const page = await context.newPage();
    const errors=[];
    page.on('pageerror', e=>errors.push(e.message));
@@ -171,7 +172,7 @@ function comparison(actualPath, referencePath, name) {
   }
 
   for(const width of [375,768,1440]){
-   const context=await browser.newContext({viewport:{width,height:900},reducedMotion:'reduce'});
+   const context=await newDemoContext(browser, {viewport:{width,height:900},reducedMotion:'reduce'});
    const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.status()>=400)errors.push(r.url());});
    for(const lang of ['en','ru']){
     await page.goto(url+'/login.html',{waitUntil:'networkidle'});
@@ -199,7 +200,7 @@ function comparison(actualPath, referencePath, name) {
    }
    assert.deepEqual(errors,[]);await context.close();
   }
-  const motion=await browser.newContext({reducedMotion:'no-preference'});const mp=await motion.newPage();await mp.goto(url);
+  const motion=await newDemoContext(browser, {reducedMotion:'no-preference'});const mp=await motion.newPage();await mp.goto(url);
   const opener=mp.locator('[data-wishlist-open]').first();await opener.click();
   assert.equal(await mp.locator('dialog').evaluate(el=>getComputedStyle(el).animationName),'dialog-in');
   await mp.keyboard.press('Escape');
@@ -207,16 +208,16 @@ function comparison(actualPath, referencePath, name) {
   assert(await opener.evaluate(el=>el===document.activeElement));await motion.close();
 
   // Storage failures must not break localization.
-  const blocked=await browser.newContext();
+  const blocked=await newDemoContext(browser, );
   await blocked.addInitScript(()=>{Object.defineProperty(window,'localStorage',{get(){throw new Error('blocked');}});});
   const bp=await blocked.newPage();await bp.goto(url);await bp.selectOption('[data-language-select]','ru');
   assert.equal(await bp.locator('html').getAttribute('lang'),'ru');await blocked.close();
-  const nojs=await browser.newContext({javaScriptEnabled:false});const np=await nojs.newPage();await np.goto(url);
+  const nojs=await newDemoContext(browser, {javaScriptEnabled:false});const np=await nojs.newPage();await np.goto(url);
   assert.equal(await np.locator('main section').count(),5);assert.equal(await np.locator('html').getAttribute('lang'),'en');await nojs.close();
   for(const [id,file] of [['home','01-home'],['the-app','02-the-app'],['why-n1x','03-why-n1x'],['plans','04-plans'],['support','07-support']]){
    const reference=path.join(root,'docs/assets/images/concept',file+'.png');
    const {width,height}=PNG.sync.read(fs.readFileSync(reference));
-   const context=await browser.newContext({viewport:{width,height},reducedMotion:'reduce'});
+   const context=await newDemoContext(browser, {viewport:{width,height},reducedMotion:'reduce'});
    const page=await context.newPage();await page.goto(url,{waitUntil:'networkidle'});
    await page.evaluate(id=>{for(const s of document.querySelectorAll('main section'))if(s.id!==id)s.style.display='none';document.querySelector('footer').style.display='none';},id);
    const actual=path.join(output,id+'.png');await page.screenshot({path:actual});
@@ -226,7 +227,7 @@ function comparison(actualPath, referencePath, name) {
   for(const [name,ref] of [['account','account-page/06-account'],['checkout','05-checkout']]){
    const reference=path.join(root,'docs/assets/images/concept',ref+'.png');
    const {width,height}=PNG.sync.read(fs.readFileSync(reference));
-   const context=await browser.newContext({viewport:{width,height},reducedMotion:'reduce'});
+   const context=await newDemoContext(browser, {viewport:{width,height},reducedMotion:'reduce'});
    const page=await context.newPage();await page.goto(url+(name==='account'?'/account.html':''),{waitUntil:'networkidle'});
    if(name==='checkout')await page.locator('[data-wishlist-open]').first().click();
    const actual=path.join(output,name+'.png');await page.screenshot({path:actual});

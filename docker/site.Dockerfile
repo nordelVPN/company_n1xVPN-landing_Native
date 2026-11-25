@@ -7,5 +7,8 @@ ARG TELEGRAM_BOT_URL=""
 RUN TELEGRAM_BOT_URL="$TELEGRAM_BOT_URL" npm run build
 
 FROM nginx:stable-alpine
+ENV NGINX_ENVSUBST_FILTER=^BRAND_API_TOKEN$
+ENV BRAND_API_TOKEN=""
+COPY docker/nginx.conf.template /etc/nginx/templates/default.conf.template
 COPY --from=build /app/build/prod/ /usr/share/nginx/html/
 EXPOSE 80

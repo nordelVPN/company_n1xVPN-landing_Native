@@ -1,4 +1,4 @@
-/* global navigator, URLSearchParams */
+/* global navigator, URLSearchParams, URL */
 'use strict';
 
 var sdkFactory = require('./vpn-portal-sdk');
@@ -24,7 +24,7 @@ if (sdk.mode === 'live' && document.querySelector('#plans')) {
     ((res && res.plans) || []).forEach(function (plan) {
       var btn = document.querySelector('[data-select-plan="' + plan.plan_code + '"]');
       var card = btn && btn.closest('.plan-card, article');
-      var priceEl = card && card.querySelector('.plan-price, strong');
+      var priceEl = card && card.querySelector('.plan-price, .price, strong');
       if (priceEl) priceEl.textContent = formatEur(plan.price_minor);
     });
   }).catch(function () { /* keep static fallback */ });
@@ -32,13 +32,19 @@ if (sdk.mode === 'live' && document.querySelector('#plans')) {
   sdk.getPublicServersCatalog().then(function (res) {
     var servers = (res && (res.servers || res.locations || res.data)) || [];
     var plansEl = document.querySelector('#plans');
-    if (plansEl && servers.length) plansEl.setAttribute('data-live-servers-count', String(servers.length));
+    if (plansEl && servers.length) {
+      plansEl.setAttribute('data-live-servers-count', String(servers.length));
+      sdkFactory.renderLiveServersStrip(plansEl.querySelector('.container') || plansEl, servers);
+    }
   }).catch(function () { /* optional */ });
 }
 
-var orderForm = document.querySelector('[data-order-form]');
-sdkFactory.initCheckoutReturnPolling(sdk);
+var isAccountPage = Boolean(document.querySelector('[data-portal-account]'));
+if (!isAccountPage) {
+  sdkFactory.initCheckoutReturnPolling(sdk);
+}
 
+var orderForm = document.querySelector('[data-order-form]');
 if (orderForm && sdk.mode === 'live') {
   var getXProvider = function () { return null; };
   var xProviderHost = orderForm.querySelector('[data-payment-providers]');
@@ -47,7 +53,12 @@ if (orderForm && sdk.mode === 'live') {
     xProviderHost.className = 'payment-providers';
     xProviderHost.setAttribute('data-payment-providers', '');
     xProviderHost.hidden = true;
-    orderForm.insertBefore(xProviderHost, orderForm.querySelector('button[type="submit"]'));
+    var xSubmit = orderForm.querySelector('button[type="submit"]');
+    if (xSubmit && xSubmit.parentNode) {
+      xSubmit.parentNode.insertBefore(xProviderHost, xSubmit);
+    } else {
+      orderForm.appendChild(xProviderHost);
+    }
   }
   sdkFactory.mountPaymentProviderSelector(sdk, xProviderHost).then(function (getter) {
     if (typeof getter === 'function') getXProvider = getter;
@@ -61,17 +72,21 @@ if (orderForm && sdk.mode === 'live') {
       window.location.href = './login.html';
       return;
     }
-    var baseUrl = window.location.origin + window.location.pathname;
+    var returnUrl = new URL('./account.html', window.location.href).href;
+    var cancelUrl = new URL('./index.html?status=cancelled', window.location.href).href;
     sdk.checkout({
       plan_code: selected ? selected.value : 'quarterly',
       provider: getXProvider(),
       payment_method: (orderForm.payment && orderForm.payment.value) || 'card',
-      return_url: baseUrl,
-      cancel_url: baseUrl + '?status=cancelled'
+      return_url: returnUrl,
+      cancel_url: cancelUrl
     }).then(function (res) {
-      var target = res && res.checkout && res.checkout.checkout_url;
-      setStatus(notice, 'Redirecting to payment provider...');
-      window.location.href = target || './account.html';
+      setStatus(notice, res && res.checkout && res.checkout.mode === 'mock' ? 'Confirm test payment to activate your VPN key.' : 'Redirecting to payment provider...');
+      var dialog = orderForm.closest('dialog');
+      if (dialog && dialog.open && res && res.checkout && res.checkout.mode === 'mock') {
+        dialog.close();
+      }
+      sdkFactory.handleCheckoutResponse(sdk, res);
     }).catch(function (err) {
       setStatus(notice, (err && err.message) || 'Checkout failed.');
     });
@@ -80,6 +95,8 @@ if (orderForm && sdk.mode === 'live') {
 
 var loginForm = document.querySelector('[data-portal-login]');
 if (loginForm && sdk.mode === 'live') {
+  if (loginForm.email && loginForm.email.value === 'user@example.com') loginForm.email.value = '';
+  if (loginForm.password && loginForm.password.value === 'demo-password') loginForm.password.value = '';
   var lStatus = loginForm.querySelector('[data-portal-status]');
   loginForm.addEventListener('submit', function (e) {
     e.preventDefault();
@@ -167,6 +184,11 @@ if (accountRoot) {
     var devicesCountEl = accountRoot.querySelector('[data-devices-count]');
     var billingEl = accountRoot.querySelector('[data-billing-list]');
 
+    if (sdk.mode === 'live' && statusEl) {
+      statusEl.hidden = true;
+      statusEl.textContent = '';
+    }
+
     var renderDevices = function (data) {
       var devices = (data && data.devices) || [];
       var limit = (data && data.limit) || 5;
@@ -186,69 +208,111 @@ if (accountRoot) {
         tr.querySelector('button').addEventListener('click', function () {
           sdk.revokeDevice(accessKey, dev.device_uid).then(function () {
             return sdk.getDevices(accessKey);
-          }).then(renderDevices);
+          }).then(renderDevices).catch(function (err) {
+            setStatus(statusEl, (err && err.message) || 'Could not revoke device.');
+          });
         });
         devicesEl.appendChild(tr);
       });
     };
 
-    var initialEmail = (accountRoot.querySelector('[data-profile-email]') && accountRoot.querySelector('[data-profile-email]').textContent.trim()) || 'user@example.com';
-    var ready = (!sdk.isAuthenticated() && sdk.mode === 'demo')
-      ? sdk.login({ email: initialEmail, password: 'demo-password' })
-      : Promise.resolve();
-
-    ready.then(function () {
-      return Promise.all([sdk.getMe(), sdk.getSubscription(), sdk.getBillingHistory()]);
-    }).then(function (results) {
-      var me = results[0];
-      var sub = results[1] && results[1].subscription;
-      var billing = results[2] && results[2].payments;
-      if (me && me.client) {
-        var emailEl = accountRoot.querySelector('[data-profile-email]');
-        if (emailEl) emailEl.textContent = me.client.email;
+    var renderServers = function (servers) {
+      if (!serversEl) return;
+      serversEl.innerHTML = '';
+      if (!servers || !servers.length) {
+        serversEl.innerHTML = '<tr><td colspan="4">No servers available for this subscription.</td></tr>';
+        return;
       }
-      if (sub) {
-        var planEl = accountRoot.querySelector('[data-sub-plan]');
-        var expEl = accountRoot.querySelector('[data-sub-expires]');
-        if (planEl) planEl.textContent = sub.plan_name + ' (' + sub.access_tier + ')';
-        if (expEl) expEl.textContent = sub.expires_at ? new Date(sub.expires_at).toLocaleDateString() : '—';
-        accessKey = sub.access_key || '';
-        if (keyEl) keyEl.textContent = maskKey(accessKey);
-        if (accessKey) {
-          sdk.getBootstrap(accessKey).then(function (boot) {
-            if (!serversEl) return;
-            serversEl.innerHTML = '';
-            ((boot && boot.servers) || []).forEach(function (srv) {
+      servers.forEach(function (srv) {
+        var tr = document.createElement('tr');
+        tr.innerHTML = '<td></td><td></td><td></td><td></td>';
+        tr.children[0].textContent = sdkFactory.formatServerLocation(srv);
+        tr.children[1].textContent = sdkFactory.formatServerStatusAndLoad(srv);
+        tr.children[2].textContent = srv.ping_ms ? srv.ping_ms + ' ms' : '—';
+        tr.children[3].textContent = sdkFactory.formatServerProtocolsAndTags(srv);
+        serversEl.appendChild(tr);
+      });
+    };
+
+    var loadAccountData = function () {
+      var initialEmail = (accountRoot.querySelector('[data-profile-email]') && accountRoot.querySelector('[data-profile-email]').textContent.trim()) || 'user@example.com';
+      var ready = (!sdk.isAuthenticated() && sdk.mode === 'demo')
+        ? sdk.login({ email: initialEmail, password: 'demo-password' })
+        : Promise.resolve();
+
+      return ready.then(function () {
+        return Promise.all([sdk.getMe(), sdk.getSubscription(), sdk.getBillingHistory()]);
+      }).then(function (results) {
+        var me = results[0];
+        var sub = results[1] && results[1].subscription;
+        var billing = results[2] && results[2].payments;
+        if (me && me.client) {
+          var emailEl = accountRoot.querySelector('[data-profile-email]');
+          var nameInput = accountRoot.querySelector('[name="display_name"]');
+          if (emailEl) emailEl.textContent = me.client.email;
+          if (nameInput) nameInput.value = me.client.display_name || '';
+        }
+        if (sub) {
+          var planEl = accountRoot.querySelector('[data-sub-plan]');
+          var subStatusEl = accountRoot.querySelector('[data-sub-status]');
+          var expEl = accountRoot.querySelector('[data-sub-expires]');
+          if (planEl) planEl.textContent = sub.plan_name + ' (' + sub.access_tier + ')';
+          if (subStatusEl) subStatusEl.textContent = sub.status;
+          if (expEl) expEl.textContent = sub.expires_at ? new Date(sub.expires_at).toLocaleDateString() : '—';
+          accessKey = sub.access_key || '';
+          if (keyEl) keyEl.textContent = revealed ? accessKey : maskKey(accessKey);
+          if (accessKey) {
+            sdk.getBootstrap(accessKey).then(function (boot) {
+              renderServers((boot && boot.servers) || []);
+            }).catch(function (err) {
+              if (err.code === 'KEY_EXPIRED') {
+                setStatus(statusEl, 'Your VPN subscription has expired. Please renew your plan.');
+              } else if (err.code === 'KEY_REVOKED') {
+                setStatus(statusEl, 'Your VPN key has been revoked. Please contact support.');
+              } else if (err.code === 'DEVICE_LIMIT_REACHED' || err.status === 409) {
+                setStatus(statusEl, 'Device limit reached (5/5). Please revoke one of your connected devices below.');
+                var errDevices = err.payload && err.payload.error && err.payload.error.devices;
+                if (Array.isArray(errDevices)) renderDevices({ limit: 5, devices: errDevices });
+              } else {
+                setStatus(statusEl, (err && err.message) || 'Could not load VPN servers.');
+              }
+            });
+            sdk.getDevices(accessKey).then(renderDevices).catch(function () { /* ignore */ });
+          } else {
+            renderServers([]);
+            renderDevices({ limit: 5, devices: [] });
+          }
+        } else {
+          renderServers([]);
+          renderDevices({ limit: 5, devices: [] });
+        }
+        if (billingEl) {
+          billingEl.innerHTML = '';
+          if (!billing || !billing.length) {
+            billingEl.innerHTML = '<tr><td colspan="4">No payments yet.</td></tr>';
+          } else {
+            billing.forEach(function (p) {
               var tr = document.createElement('tr');
               tr.innerHTML = '<td></td><td></td><td></td><td></td>';
-              tr.children[0].textContent = srv.country_code + ' — ' + srv.name + (srv.is_recommended ? ' ★' : '');
-              tr.children[1].textContent = srv.status;
-              tr.children[2].textContent = srv.ping_ms ? srv.ping_ms + ' ms' : '—';
-              tr.children[3].textContent = (srv.protocols || []).map(function (p) { return p.type; }).join(', ');
-              serversEl.appendChild(tr);
+              tr.children[0].textContent = p.paid_at ? new Date(p.paid_at).toLocaleDateString() : '—';
+              tr.children[1].textContent = p.plan_code;
+              tr.children[2].textContent = '€' + ((p.final_amount_minor || 0) / 100).toFixed(2);
+              tr.children[3].textContent = sdkFactory.formatPaymentProvider(p.provider) + ' · ' + sdkFactory.formatPaymentStatus(p.status);
+              billingEl.appendChild(tr);
             });
-          });
-          sdk.getDevices(accessKey).then(renderDevices);
+          }
         }
+      }).catch(function (err) {
+        setStatus(statusEl, (err && err.message) || 'Could not load account data.');
+      });
+    };
+
+    loadAccountData();
+    sdkFactory.initCheckoutReturnPolling(sdk, {
+      statusEl: statusEl,
+      onPaid: function () {
+        loadAccountData();
       }
-      if (billingEl) {
-        billingEl.innerHTML = '';
-        if (!billing || !billing.length) {
-          billingEl.innerHTML = '<tr><td colspan="4">No payments yet.</td></tr>';
-        } else {
-          billing.forEach(function (p) {
-            var tr = document.createElement('tr');
-            tr.innerHTML = '<td></td><td></td><td></td><td></td>';
-            tr.children[0].textContent = p.paid_at ? new Date(p.paid_at).toLocaleDateString() : '—';
-            tr.children[1].textContent = p.plan_code;
-            tr.children[2].textContent = '€' + ((p.final_amount_minor || 0) / 100).toFixed(2);
-            tr.children[3].textContent = sdkFactory.formatPaymentProvider(p.provider) + ' · ' + sdkFactory.formatPaymentStatus(p.status);
-            billingEl.appendChild(tr);
-          });
-        }
-      }
-    }).catch(function (err) {
-      setStatus(statusEl, (err && err.message) || 'Could not load account data.');
     });
 
     var revealBtn = accountRoot.querySelector('[data-key-reveal]');
@@ -323,6 +387,8 @@ if (accountRoot) {
         }).then(function () {
           supportForm.reset();
           setStatus(statusEl, 'Support request sent.');
+        }).catch(function (err) {
+          setStatus(statusEl, (err && err.message) || 'Support request failed.');
         });
       });
     }

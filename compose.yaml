@@ -5,8 +5,10 @@ services:
       dockerfile: docker/site.Dockerfile
       args:
         TELEGRAM_BOT_URL: ${TELEGRAM_BOT_URL:-}
+    environment:
+      BRAND_API_TOKEN: ${BRAND_API_TOKEN:-}
     ports:
-      - "127.0.0.1:${SITE_PORT:-3000}:80"
+      - "127.0.0.1:${SITE_PORT:-3003}:80"
     restart: unless-stopped
 
   bot:
