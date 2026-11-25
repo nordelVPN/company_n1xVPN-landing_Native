@@ -127,7 +127,7 @@ function comparison(actualPath, referencePath, name) {
      assert.equal(await page.locator('#order-title').textContent(),dict[lang]['checkout.title']);
      assert.equal(await page.locator('[data-wishlist-close]').innerText(),'');
      assert.equal(await page.locator('dialog').getAttribute('aria-describedby'),'wishlist-description');
-     const planIds=['trial','next','three','twelve'];
+     const planIds=['trial','monthly','quarterly','yearly'];
      const prices=['€1','€7','€15','€55'];
      const pi=planIds.indexOf(await cta.getAttribute('data-select-plan')||'trial');
      assert(pi>=0);
@@ -135,14 +135,14 @@ function comparison(actualPath, referencePath, name) {
      assert.equal(await page.locator('[data-order-plan]').textContent(),dict[lang]['pricing.plans.'+pi+'.name']);
      assert.equal(await page.locator('[data-order-total]').textContent(),prices[pi]);
      assert.equal(await page.locator('[data-order-billing]').textContent(),dict[lang][pi===0?'checkout.once':'checkout.recurring']);
-     await page.locator('[value=twelve]').check();
+     await page.locator('[value=yearly]').check();
      assert.equal(await page.locator('[data-order-plan]').textContent(),dict[lang]['pricing.plans.3.name']);
      assert.equal(await page.locator('[data-order-total]').textContent(),'€55');
      assert.equal(await page.locator('[data-order-billing]').textContent(),dict[lang]['checkout.recurring']);
      await page.locator('[value=trial]').check();
      assert.equal(await page.locator('[data-order-total]').textContent(),'€1');
      assert.equal(await page.locator('[data-order-billing]').textContent(),dict[lang]['checkout.once']);
-     await page.locator('[value=twelve]').check();
+     await page.locator('[value=yearly]').check();
      await page.locator('#order-email').fill('demo@example.com');
      await page.selectOption('#order-payment','demo');
      await page.locator('[data-order-form] button[type=submit]').click();
@@ -185,7 +185,7 @@ function comparison(actualPath, referencePath, name) {
     assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
     await page.screenshot({path:path.join(output,'account-'+lang+'-'+width+'.png'),fullPage:true});
     await page.locator('[data-wishlist-open]').first().click();
-    await page.locator('[value=three]').check();
+    await page.locator('[value=quarterly]').check();
     // Change language through the existing controller while the background is inert.
     await page.evaluate(lang=>{const select=document.querySelector('[data-language-select]');select.value=lang;select.dispatchEvent(new Event('change'));},lang==='en'?'ru':'en');
     assert.equal(await page.locator('[data-order-plan]').textContent(),dict[lang==='en'?'ru':'en']['pricing.plans.2.name']);

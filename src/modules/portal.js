@@ -87,7 +87,7 @@ if (accountRoot) {
   }
 
   var ready = (!sdk.isAuthenticated() && sdk.mode === 'demo')
-    ? sdk.login({ email: 'demo@n1xvpn.com', password: 'demo-password' })
+    ? sdk.login({ email: (accountRoot.querySelector('[data-profile-email]') && accountRoot.querySelector('[data-profile-email]').textContent.trim()) || 'user@example.com', password: 'demo-password' })
     : Promise.resolve();
 
   ready.then(function () {
