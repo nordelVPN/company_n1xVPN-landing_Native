@@ -46,6 +46,14 @@ if (!isAccountPage) {
 
 var orderForm = document.querySelector('[data-order-form]');
 if (orderForm && sdk.mode === 'live') {
+  var legacyPayLabel = orderForm.querySelector('label[for="order-payment"]');
+  var legacyPaySelect = orderForm.querySelector('#order-payment');
+  if (legacyPayLabel) legacyPayLabel.hidden = true;
+  if (legacyPaySelect) {
+    legacyPaySelect.disabled = true;
+    var legacyWrap = legacyPaySelect.closest('.select-wrap, .field') || legacyPaySelect;
+    legacyWrap.hidden = true;
+  }
   var getXProvider = function () { return null; };
   var xProviderHost = orderForm.querySelector('[data-payment-providers]');
   if (!xProviderHost) {
