@@ -96,9 +96,9 @@ module.exports = {
     description: 'A universal VPN for play, work, and everyday online life.',
     plans: [
       { id: 'trial', price: '€1', name: 'Trial - 1 month', nameKey: 'pricing.plans.0.name', devices: '5 devices', devicesKey: 'pricing.plans.0.devices', note: 'Once for a new user', noteKey: 'pricing.plans.0.note', button: 'Choose Trial', buttonKey: 'pricing.plans.0.button' },
-      { id: 'next', price: '€7', name: 'Next - 1 month', nameKey: 'pricing.plans.1.name', devices: '5 devices', devicesKey: 'pricing.plans.1.devices', note: '', noteKey: 'pricing.plans.1.note', button: 'Choose Next', buttonKey: 'pricing.plans.1.button' },
-      { id: 'three', price: '€15', name: '3 months', nameKey: 'pricing.plans.2.name', devices: '5 devices', devicesKey: 'pricing.plans.2.devices', note: '€5 per month', noteKey: 'pricing.plans.2.note', button: 'Choose 3 Months', buttonKey: 'pricing.plans.2.button' },
-      { id: 'twelve', price: '€55', name: '12 months', nameKey: 'pricing.plans.3.name', devices: '5 devices', devicesKey: 'pricing.plans.3.devices', note: '€4.58 per month', noteKey: 'pricing.plans.3.note', button: 'Choose 12 Months', buttonKey: 'pricing.plans.3.button' }
+      { id: 'monthly', price: '€7', name: 'Next - 1 month', nameKey: 'pricing.plans.1.name', devices: '5 devices', devicesKey: 'pricing.plans.1.devices', note: '', noteKey: 'pricing.plans.1.note', button: 'Choose Next', buttonKey: 'pricing.plans.1.button' },
+      { id: 'quarterly', price: '€15', name: '3 months', nameKey: 'pricing.plans.2.name', devices: '5 devices', devicesKey: 'pricing.plans.2.devices', note: '€5 per month', noteKey: 'pricing.plans.2.note', button: 'Choose 3 Months', buttonKey: 'pricing.plans.2.button' },
+      { id: 'yearly', price: '€55', name: '12 months', nameKey: 'pricing.plans.3.name', devices: '5 devices', devicesKey: 'pricing.plans.3.devices', note: '€4.58 per month', noteKey: 'pricing.plans.3.note', button: 'Choose 12 Months', buttonKey: 'pricing.plans.3.button' }
     ]
   },
   support: {

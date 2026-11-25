@@ -1,9 +1,9 @@
 const { t } = require('./i18n');
 const plans = {
   trial: { index: 0, billing: 'checkout.once' },
-  next: { index: 1, billing: 'checkout.recurring' },
-  three: { index: 2, billing: 'checkout.recurring' },
-  twelve: { index: 3, billing: 'checkout.recurring' }
+  monthly: { index: 1, billing: 'checkout.recurring' },
+  quarterly: { index: 2, billing: 'checkout.recurring' },
+  yearly: { index: 3, billing: 'checkout.recurring' }
 };
 const dialog = document.querySelector('[data-wishlist]');
 if (dialog) {

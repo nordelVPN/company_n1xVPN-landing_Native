@@ -1,6 +1,6 @@
 const dictionaries = require('../data/locales.json');
 const fallback = 'en';
-const storageKey = 'n1x-language';
+const storageKey = 'n1xvpn-language';
 const owns = (object, key) => Object.prototype.hasOwnProperty.call(object, key);
 let language = fallback;
 
