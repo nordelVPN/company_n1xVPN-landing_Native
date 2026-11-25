@@ -128,7 +128,7 @@
     "login.description": "Explore your N1X VPN demo account. No password required.",
     "login.email": "Email",
     "login.submit": "Log in to demo",
-    "login.link": "Demo login",
+    "login.link": "Log in",
     "pricing.plans.0.name": "Trial - 1 month",
     "pricing.plans.0.devices": "5 devices",
     "pricing.plans.0.note": "Once for a new user",
@@ -145,7 +145,11 @@
     "pricing.plans.3.devices": "5 devices",
     "pricing.plans.3.note": "€4.58 per month",
     "pricing.plans.3.button": "Choose 12 Months",
-    "checkout.once": "Once for a new user"
+    "checkout.once": "Once for a new user",
+    "nav.account": "Account",
+    "nav.login": "Log in",
+    "nav.createAccount": "Create account",
+    "nav.forgotPassword": "Forgot password"
   },
   "ru": {
     "language.name": "RU",
@@ -276,7 +280,7 @@
     "login.description": "Откройте демо-аккаунт N1X VPN. Пароль не нужен.",
     "login.email": "Почта",
     "login.submit": "Войти в демо",
-    "login.link": "Демо-вход",
+    "login.link": "Войти",
     "pricing.plans.0.name": "Триал - 1 мес",
     "pricing.plans.0.devices": "5 устройств",
     "pricing.plans.0.note": "Один раз для нового пользователя",
@@ -293,7 +297,11 @@
     "pricing.plans.3.devices": "5 устройств",
     "pricing.plans.3.note": "€4.58 в месяц",
     "pricing.plans.3.button": "Выбрать 12 месяцев",
-    "checkout.once": "Один раз для нового пользователя"
+    "checkout.once": "Один раз для нового пользователя",
+    "nav.account": "Аккаунт",
+    "nav.login": "Войти",
+    "nav.createAccount": "Регистрация",
+    "nav.forgotPassword": "Забыли пароль?"
   },
   "pl": {
     "language.name": "PL",
@@ -424,7 +432,7 @@
     "login.description": "Poznaj swoje konto demo N1X VPN. Hasło nie jest wymagane.",
     "login.email": "E-mail",
     "login.submit": "Zaloguj do demo",
-    "login.link": "Logowanie demo",
+    "login.link": "Zaloguj się",
     "pricing.plans.0.name": "Próbny - 1 miesiąc",
     "pricing.plans.0.devices": "5 urządzeń",
     "pricing.plans.0.note": "Raz dla nowego użytkownika",
@@ -441,7 +449,11 @@
     "pricing.plans.3.devices": "5 urządzeń",
     "pricing.plans.3.note": "€4,58 miesięcznie",
     "pricing.plans.3.button": "Wybierz 12 miesięcy",
-    "checkout.once": "Raz dla nowego użytkownika"
+    "checkout.once": "Raz dla nowego użytkownika",
+    "nav.account": "Konto",
+    "nav.login": "Zaloguj się",
+    "nav.createAccount": "Utwórz konto",
+    "nav.forgotPassword": "Nie pamiętasz hasła?"
   },
   "uk": {
     "language.name": "UK",
@@ -572,7 +584,7 @@
     "login.description": "Огляньте свій демо-акаунт N1X VPN. Пароль не потрібен.",
     "login.email": "Ел. пошта",
     "login.submit": "Увійти в демо",
-    "login.link": "Демо-вхід",
+    "login.link": "Увійти",
     "pricing.plans.0.name": "Пробний - 1 місяць",
     "pricing.plans.0.devices": "5 пристроїв",
     "pricing.plans.0.note": "Одноразово для нового користувача",
@@ -589,7 +601,11 @@
     "pricing.plans.3.devices": "5 пристроїв",
     "pricing.plans.3.note": "€4,58 на місяць",
     "pricing.plans.3.button": "Обрати 12 місяців",
-    "checkout.once": "Одноразово для нового користувача"
+    "checkout.once": "Одноразово для нового користувача",
+    "nav.account": "Акаунт",
+    "nav.login": "Увійти",
+    "nav.createAccount": "Реєстрація",
+    "nav.forgotPassword": "Забули пароль?"
   },
   "lt": {
     "language.name": "LT",
@@ -720,7 +736,7 @@
     "login.description": "Išbandyk savo N1X VPN demo paskyrą. Slaptažodžio nereikia.",
     "login.email": "El. paštas",
     "login.submit": "Prisijungti prie demo",
-    "login.link": "Demo prisijungimas",
+    "login.link": "Prisijungti",
     "pricing.plans.0.name": "Bandomasis - 1 mėn.",
     "pricing.plans.0.devices": "5 įrenginiai",
     "pricing.plans.0.note": "Vieną kartą naujam vartotojui",
@@ -737,7 +753,11 @@
     "pricing.plans.3.devices": "5 įrenginiai",
     "pricing.plans.3.note": "€4,58 per mėnesį",
     "pricing.plans.3.button": "Pasirinkti 12 mėnesių",
-    "checkout.once": "Vieną kartą naujam vartotojui"
+    "checkout.once": "Vieną kartą naujam vartotojui",
+    "nav.account": "Paskyra",
+    "nav.login": "Prisijungti",
+    "nav.createAccount": "Sukurti paskyrą",
+    "nav.forgotPassword": "Pamiršote slaptažodį?"
   },
   "tr": {
     "language.name": "TR",
@@ -868,7 +888,7 @@
     "login.description": "N1X VPN demo hesabını keşfet. Parola gerekmez.",
     "login.email": "E-posta",
     "login.submit": "Demoya giriş yap",
-    "login.link": "Demo giriş",
+    "login.link": "Giriş yap",
     "pricing.plans.0.name": "Deneme - 1 ay",
     "pricing.plans.0.devices": "5 cihaz",
     "pricing.plans.0.note": "Yeni kullanıcı için bir kez",
@@ -885,7 +905,11 @@
     "pricing.plans.3.devices": "5 cihaz",
     "pricing.plans.3.note": "Aylık €4,58",
     "pricing.plans.3.button": "12 Ay seç",
-    "checkout.once": "Yeni kullanıcı için bir kez"
+    "checkout.once": "Yeni kullanıcı için bir kez",
+    "nav.account": "Hesap",
+    "nav.login": "Giriş yap",
+    "nav.createAccount": "Hesap oluştur",
+    "nav.forgotPassword": "Şifremi unuttum"
   },
   "ro": {
     "language.name": "RO",
@@ -1016,7 +1040,7 @@
     "login.description": "Explorează contul tău demo N1X VPN. Nu este necesară parola.",
     "login.email": "E-mail",
     "login.submit": "Intră în demo",
-    "login.link": "Autentificare demo",
+    "login.link": "Autentificare",
     "pricing.plans.0.name": "Probă - 1 lună",
     "pricing.plans.0.devices": "5 dispozitive",
     "pricing.plans.0.note": "O singură dată pentru utilizatori noi",
@@ -1033,7 +1057,11 @@
     "pricing.plans.3.devices": "5 dispozitive",
     "pricing.plans.3.note": "€4,58 pe lună",
     "pricing.plans.3.button": "Alege 12 luni",
-    "checkout.once": "O singură dată pentru utilizatori noi"
+    "checkout.once": "O singură dată pentru utilizatori noi",
+    "nav.account": "Cont",
+    "nav.login": "Autentificare",
+    "nav.createAccount": "Creează cont",
+    "nav.forgotPassword": "Ai uitat parola?"
   },
   "de": {
     "language.name": "DE",
@@ -1164,7 +1192,7 @@
     "login.description": "Erkunde dein N1X VPN Demo-Konto. Kein Passwort erforderlich.",
     "login.email": "E-Mail",
     "login.submit": "In Demo anmelden",
-    "login.link": "Demo-Login",
+    "login.link": "Anmelden",
     "pricing.plans.0.name": "Test - 1 Monat",
     "pricing.plans.0.devices": "5 Geräte",
     "pricing.plans.0.note": "Einmalig für neue Nutzer",
@@ -1181,7 +1209,11 @@
     "pricing.plans.3.devices": "5 Geräte",
     "pricing.plans.3.note": "€4,58 pro Monat",
     "pricing.plans.3.button": "12 Monate wählen",
-    "checkout.once": "Einmalig für neue Nutzer"
+    "checkout.once": "Einmalig für neue Nutzer",
+    "nav.account": "Konto",
+    "nav.login": "Anmelden",
+    "nav.createAccount": "Konto erstellen",
+    "nav.forgotPassword": "Passwort vergessen?"
   },
   "sk": {
     "language.name": "SK",
@@ -1312,7 +1344,7 @@
     "login.description": "Preskúmaj svoj demo účet N1X VPN. Heslo nie je potrebné.",
     "login.email": "E-mail",
     "login.submit": "Prihlásiť do dema",
-    "login.link": "Demo prihlásenie",
+    "login.link": "Prihlásiť sa",
     "pricing.plans.0.name": "Skúšobný - 1 mesiac",
     "pricing.plans.0.devices": "5 zariadení",
     "pricing.plans.0.note": "Raz pre nového používateľa",
@@ -1329,7 +1361,11 @@
     "pricing.plans.3.devices": "5 zariadení",
     "pricing.plans.3.note": "€4,58 mesačne",
     "pricing.plans.3.button": "Vybrať 12 mesiacov",
-    "checkout.once": "Raz pre nového používateľa"
+    "checkout.once": "Raz pre nového používateľa",
+    "nav.account": "Účet",
+    "nav.login": "Prihlásiť sa",
+    "nav.createAccount": "Vytvoriť účet",
+    "nav.forgotPassword": "Zabudnuté heslo?"
   },
   "hr": {
     "language.name": "HR",
@@ -1460,7 +1496,7 @@
     "login.description": "Istraži svoj N1X VPN demo račun. Lozinka nije potrebna.",
     "login.email": "E-mail",
     "login.submit": "Prijavi se u demo",
-    "login.link": "Demo prijava",
+    "login.link": "Prijava",
     "pricing.plans.0.name": "Probni - 1 mjesec",
     "pricing.plans.0.devices": "5 uređaja",
     "pricing.plans.0.note": "Jednom za novog korisnika",
@@ -1477,7 +1513,11 @@
     "pricing.plans.3.devices": "5 uređaja",
     "pricing.plans.3.note": "€4,58 mjesečno",
     "pricing.plans.3.button": "Odaberi 12 mjeseci",
-    "checkout.once": "Jednom za novog korisnika"
+    "checkout.once": "Jednom za novog korisnika",
+    "nav.account": "Račun",
+    "nav.login": "Prijava",
+    "nav.createAccount": "Izradi račun",
+    "nav.forgotPassword": "Zaboravljena lozinka?"
   },
   "sr": {
     "language.name": "SR",
@@ -1608,7 +1648,7 @@
     "login.description": "Istraži svoj N1X VPN demo nalog. Lozinka nije potrebna.",
     "login.email": "E-mail",
     "login.submit": "Prijavi se u demo",
-    "login.link": "Demo prijava",
+    "login.link": "Пријава",
     "pricing.plans.0.name": "Probni - 1 mesec",
     "pricing.plans.0.devices": "5 uređaja",
     "pricing.plans.0.note": "Jednom za novog korisnika",
@@ -1625,7 +1665,11 @@
     "pricing.plans.3.devices": "5 uređaja",
     "pricing.plans.3.note": "€4,58 mesečno",
     "pricing.plans.3.button": "Izaberi 12 meseci",
-    "checkout.once": "Jednom za novog korisnika"
+    "checkout.once": "Jednom za novog korisnika",
+    "nav.account": "Налог",
+    "nav.login": "Пријава",
+    "nav.createAccount": "Направи налог",
+    "nav.forgotPassword": "Заборављена лозинка?"
   },
   "bg": {
     "language.name": "BG",
@@ -1756,7 +1800,7 @@
     "login.description": "Разгледай своя демо профил в N1X VPN. Парола не е необходима.",
     "login.email": "Имейл",
     "login.submit": "Вход в демо",
-    "login.link": "Демо вход",
+    "login.link": "Вход",
     "pricing.plans.0.name": "Пробен - 1 месец",
     "pricing.plans.0.devices": "5 устройства",
     "pricing.plans.0.note": "Еднократно за нов потребител",
@@ -1773,7 +1817,11 @@
     "pricing.plans.3.devices": "5 устройства",
     "pricing.plans.3.note": "€4,58 на месец",
     "pricing.plans.3.button": "Избери 12 месеца",
-    "checkout.once": "Еднократно за нов потребител"
+    "checkout.once": "Еднократно за нов потребител",
+    "nav.account": "Акаунт",
+    "nav.login": "Вход",
+    "nav.createAccount": "Регистрация",
+    "nav.forgotPassword": "Забравена парола?"
   },
   "hu": {
     "language.name": "HU",
@@ -1904,7 +1952,7 @@
     "login.description": "Fedezd fel az N1X VPN demó fiókodat. Jelszó nem szükséges.",
     "login.email": "E-mail",
     "login.submit": "Belépés a demóba",
-    "login.link": "Demó bejelentkezés",
+    "login.link": "Bejelentkezés",
     "pricing.plans.0.name": "Próba - 1 hónap",
     "pricing.plans.0.devices": "5 eszköz",
     "pricing.plans.0.note": "Egyszer új felhasználóknak",
@@ -1921,6 +1969,10 @@
     "pricing.plans.3.devices": "5 eszköz",
     "pricing.plans.3.note": "€4,58 havonta",
     "pricing.plans.3.button": "12 hónap választása",
-    "checkout.once": "Egyszer új felhasználóknak"
+    "checkout.once": "Egyszer új felhasználóknak",
+    "nav.account": "Fiók",
+    "nav.login": "Bejelentkezés",
+    "nav.createAccount": "Fiók létrehozása",
+    "nav.forgotPassword": "Elfelejtett jelszó?"
   }
 }
