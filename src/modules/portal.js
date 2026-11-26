@@ -3,6 +3,7 @@
 
 var sdkFactory = require('./vpn-portal-sdk');
 var sdk = sdkFactory.createVpnPortalSdk({ brandSlug: 'n1x' });
+sdkFactory.syncAccountNavLinks(sdk);
 
 function setStatus(el, msg) {
   if (!el) return;
@@ -181,7 +182,7 @@ if (resetToken && resetForm) {
 var accountRoot = document.querySelector('[data-portal-account]');
 if (accountRoot) {
   if (sdk.mode === 'live' && !sdk.isAuthenticated()) {
-    window.location.href = './login.html';
+    window.location.replace('./login.html');
   } else {
     var accessKey = '';
     var revealed = false;
@@ -243,7 +244,8 @@ if (accountRoot) {
     };
 
     var loadAccountData = function () {
-      var initialEmail = (accountRoot.querySelector('[data-profile-email]') && accountRoot.querySelector('[data-profile-email]').textContent.trim()) || 'user@example.com';
+      var rawEmail = accountRoot.querySelector('[data-profile-email]') ? accountRoot.querySelector('[data-profile-email]').textContent.trim() : '';
+      var initialEmail = (rawEmail && rawEmail.indexOf('@') > 0) ? rawEmail : 'user@example.com';
       var ready = (!sdk.isAuthenticated() && sdk.mode === 'demo')
         ? sdk.login({ email: initialEmail, password: 'demo-password' })
         : Promise.resolve();
@@ -254,6 +256,7 @@ if (accountRoot) {
         var me = results[0];
         var sub = results[1] && results[1].subscription;
         var billing = results[2] && results[2].payments;
+        sdkFactory.revealAuthGate();
         if (me && me.client) {
           var emailEl = accountRoot.querySelector('[data-profile-email]');
           var nameInput = accountRoot.querySelector('[name="display_name"]');
@@ -311,6 +314,11 @@ if (accountRoot) {
           }
         }
       }).catch(function (err) {
+        if (sdk.mode === 'live' && (!sdk.isAuthenticated() || (err && (err.status === 401 || err.code === 'UNAUTHORIZED')))) {
+          window.location.replace('./login.html');
+          return;
+        }
+        sdkFactory.revealAuthGate();
         setStatus(statusEl, (err && err.message) || 'Could not load account data.');
       });
     };

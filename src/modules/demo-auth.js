@@ -15,5 +15,10 @@ document.querySelector('[data-demo-logout]')?.addEventListener('click', () => {
   try { window.sessionStorage.removeItem('n1x-demo-session'); } catch { /* No persisted session. */ }
 });
 document.querySelectorAll('[data-account-action]').forEach(button => button.addEventListener('click', () => {
-  document.querySelector('[data-account-notice]').hidden = false;
+  const notice = document.querySelector('[data-account-notice]');
+  if (!notice) return;
+  if (!notice.textContent.trim()) {
+    notice.textContent = 'Manage your VPN connection using the sections above or the N1X VPN app.';
+  }
+  notice.hidden = false;
 }));

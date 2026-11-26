@@ -179,7 +179,7 @@ function comparison(actualPath, referencePath, name) {
     await page.selectOption('[data-language-select]',lang);
     assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
     await page.screenshot({path:path.join(output,'login-'+lang+'-'+width+'.png'),fullPage:true});
-    await page.locator('[data-demo-login] button').click();
+    await page.fill('#login-email','user@example.com');await page.fill('#login-password','demo-password');await page.locator('[data-demo-login] button').click();
     await page.waitForURL('**/account.html');
     assert.equal(await page.locator('html').getAttribute('lang'),lang);
     assert.equal(await page.locator('.account-email').textContent(),'user@example.com');
