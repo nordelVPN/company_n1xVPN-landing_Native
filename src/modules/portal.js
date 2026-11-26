@@ -4,6 +4,9 @@
 var sdkFactory = require('./vpn-portal-sdk');
 var sdk = sdkFactory.createVpnPortalSdk({ brandSlug: 'n1x' });
 sdkFactory.syncAccountNavLinks(sdk);
+var siteConfigPromise = sdk.getSiteConfig();
+var cachedPlans = [];
+var orderWishlistCtrl = null;
 
 function setStatus(el, msg) {
   if (!el) return;
@@ -20,24 +23,46 @@ function formatEur(minor) {
   return '€' + (Number.isInteger(euros) ? String(euros) : euros.toFixed(2));
 }
 
-if (sdk.mode === 'live' && document.querySelector('#plans')) {
-  sdk.getPublicPlans().then(function (res) {
-    ((res && res.plans) || []).forEach(function (plan) {
-      var btn = document.querySelector('[data-select-plan="' + plan.plan_code + '"]');
-      var card = btn && btn.closest('.plan-card, article');
-      var priceEl = card && card.querySelector('.plan-price, .price, strong');
-      if (priceEl) priceEl.textContent = formatEur(plan.price_minor);
-    });
-  }).catch(function () { /* keep static fallback */ });
+if (document.querySelector('#plans')) {
+  document.querySelectorAll('[data-select-plan]').forEach(function (btn) {
+    var code = btn.getAttribute('data-select-plan');
+    var card = btn.closest('.plan-card, article');
+    var titleEl = card && card.querySelector('h3');
+    if (code) cachedPlans.push({ plan_code: code, name: titleEl ? titleEl.textContent.trim() : code });
+  });
 
-  sdk.getPublicServersCatalog().then(function (res) {
-    var servers = (res && (res.servers || res.locations || res.data)) || [];
-    var plansEl = document.querySelector('#plans');
-    if (plansEl && servers.length) {
-      plansEl.setAttribute('data-live-servers-count', String(servers.length));
-      sdkFactory.renderLiveServersStrip(plansEl.querySelector('.container') || plansEl, servers);
+  if (sdk.mode === 'live') {
+    sdk.getPublicPlans().then(function (res) {
+      var plans = (res && res.plans) || [];
+      if (plans.length) {
+        cachedPlans = plans.map(function (p) { return { plan_code: p.plan_code, name: p.name || p.plan_code }; });
+        if (orderWishlistCtrl) orderWishlistCtrl.update({ plans: cachedPlans });
+      }
+      plans.forEach(function (plan) {
+        var btn = document.querySelector('[data-select-plan="' + plan.plan_code + '"]');
+        var card = btn && btn.closest('.plan-card, article');
+        var priceEl = card && card.querySelector('.plan-price, .price, strong');
+        if (priceEl) priceEl.textContent = formatEur(plan.price_minor);
+      });
+    }).catch(function () { /* keep static fallback */ });
+  }
+
+  siteConfigPromise.then(function (cfg) {
+    if (!sdkFactory.isSiteServersEnabled(cfg)) {
+      var strip = document.querySelector('[data-live-servers-strip]');
+      if (strip) strip.hidden = true;
+      return;
     }
-  }).catch(function () { /* optional */ });
+    if (sdk.mode !== 'live') return;
+    sdk.getPublicServersCatalog().then(function (res) {
+      var servers = (res && (res.servers || res.locations || res.data)) || [];
+      var plansEl = document.querySelector('#plans');
+      if (plansEl && servers.length) {
+        plansEl.setAttribute('data-live-servers-count', String(servers.length));
+        sdkFactory.renderLiveServersStrip(plansEl.querySelector('.container') || plansEl, servers);
+      }
+    }).catch(function () { /* optional */ });
+  });
 }
 
 var isAccountPage = Boolean(document.querySelector('[data-portal-account]'));
@@ -46,6 +71,43 @@ if (!isAccountPage) {
 }
 
 var orderForm = document.querySelector('[data-order-form]');
+function switchN1xCheckoutToWishlist(cfg, planCode) {
+  if (!orderForm) return;
+  orderForm.hidden = true;
+  var dialog = orderForm.closest('dialog') || orderForm.parentNode;
+  if (!dialog) return;
+  dialog.querySelectorAll('[data-payment-providers]').forEach(function (el) { el.hidden = true; });
+  var host = dialog.querySelector('[data-wishlist-checkout-host]');
+  if (!host) {
+    host = document.createElement('div');
+    host.setAttribute('data-wishlist-checkout-host', '');
+    host.style.marginTop = '1rem';
+    dialog.appendChild(host);
+  }
+  var selected = orderForm.querySelector('[name="order-plan"]:checked');
+  orderWishlistCtrl = sdkFactory.renderWishlistCard(sdk, host, {
+    siteConfig: cfg,
+    planCode: planCode || (selected ? selected.value : ''),
+    plans: cachedPlans,
+    sourcePage: 'checkout',
+    variant: 'checkout'
+  });
+}
+
+if (orderForm) {
+  document.addEventListener('click', function (e) {
+    var pickBtn = e.target && e.target.closest && e.target.closest('[data-select-plan]');
+    if (pickBtn && orderWishlistCtrl) {
+      orderWishlistCtrl.setPlanCode(pickBtn.getAttribute('data-select-plan') || '');
+    }
+  });
+  siteConfigPromise.then(function (cfg) {
+    if (!sdkFactory.isSiteCheckoutEnabled(cfg)) {
+      switchN1xCheckoutToWishlist(cfg, '');
+    }
+  });
+}
+
 if (orderForm && sdk.mode === 'live') {
   var legacyPayLabel = orderForm.querySelector('label[for="order-payment"]');
   var legacyPaySelect = orderForm.querySelector('#order-payment');
@@ -69,8 +131,14 @@ if (orderForm && sdk.mode === 'live') {
       orderForm.appendChild(xProviderHost);
     }
   }
-  sdkFactory.mountPaymentProviderSelector(sdk, xProviderHost).then(function (getter) {
-    if (typeof getter === 'function') getXProvider = getter;
+  siteConfigPromise.then(function (cfg) {
+    if (!sdkFactory.isSiteCheckoutEnabled(cfg)) {
+      xProviderHost.hidden = true;
+      return;
+    }
+    sdkFactory.mountPaymentProviderSelector(sdk, xProviderHost).then(function (getter) {
+      if (typeof getter === 'function') getXProvider = getter;
+    });
   });
 
   orderForm.addEventListener('submit', function (e) {
@@ -97,6 +165,12 @@ if (orderForm && sdk.mode === 'live') {
       }
       sdkFactory.handleCheckoutResponse(sdk, res);
     }).catch(function (err) {
+      if (err && (err.code === 'SITE_IN_WISHLIST_MODE' || err.status === 403)) {
+        sdk.getSiteConfig({ force: true }).then(function (cfg) {
+          switchN1xCheckoutToWishlist(cfg, selected ? selected.value : '');
+        });
+        return;
+      }
       setStatus(notice, (err && err.message) || 'Checkout failed.');
     });
   });
@@ -120,6 +194,11 @@ if (loginForm && sdk.mode === 'live') {
 
 var registerForm = document.querySelector('[data-portal-register]');
 if (registerForm) {
+  siteConfigPromise.then(function (cfg) {
+    if (sdkFactory.isSiteInWishlistMode(cfg)) {
+      sdkFactory.mountRegisterWishlistBanner(registerForm, cfg);
+    }
+  });
   var rStatus = registerForm.querySelector('[data-portal-status]');
   registerForm.addEventListener('submit', function (e) {
     e.preventDefault();
@@ -251,17 +330,26 @@ if (accountRoot) {
         : Promise.resolve();
 
       return ready.then(function () {
-        return Promise.all([sdk.getMe(), sdk.getSubscription(), sdk.getBillingHistory()]);
+        return Promise.all([sdk.getMe(), sdk.getSubscription(), sdk.getBillingHistory(), siteConfigPromise]);
       }).then(function (results) {
         var me = results[0];
         var sub = results[1] && results[1].subscription;
         var billing = results[2] && results[2].payments;
+        var siteCfg = results[3];
+        var serversAllowed = sdkFactory.isSiteServersEnabled(siteCfg);
         sdkFactory.revealAuthGate();
         if (me && me.client) {
           var emailEl = accountRoot.querySelector('[data-profile-email]');
           var nameInput = accountRoot.querySelector('[name="display_name"]');
           if (emailEl) emailEl.textContent = me.client.email;
           if (nameInput) nameInput.value = me.client.display_name || '';
+        }
+        if (!serversAllowed) {
+          var vpnAccessCard = accountRoot.querySelector('#vpn-access');
+          var devicesCard = accountRoot.querySelector('#devices');
+          if (vpnAccessCard) vpnAccessCard.hidden = true;
+          if (devicesCard) devicesCard.hidden = true;
+          sdkFactory.mountAccountWaitlistCard(vpnAccessCard || accountRoot, siteCfg, { className: 'account-card' });
         }
         if (sub) {
           var planEl = accountRoot.querySelector('[data-sub-plan]');
@@ -272,7 +360,7 @@ if (accountRoot) {
           if (expEl) expEl.textContent = sub.expires_at ? new Date(sub.expires_at).toLocaleDateString() : '—';
           accessKey = sub.access_key || '';
           if (keyEl) keyEl.textContent = revealed ? accessKey : maskKey(accessKey);
-          if (accessKey) {
+          if (accessKey && serversAllowed) {
             sdk.getBootstrap(accessKey).then(function (boot) {
               renderServers((boot && boot.servers) || []);
             }).catch(function (err) {
