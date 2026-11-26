@@ -52,7 +52,7 @@ if (dialog) {
   form.addEventListener('change', update);
   form.addEventListener('submit', event => {
     event.preventDefault();
-    dialog.querySelector('[data-order-notice]').hidden = false;
+    const n = dialog.querySelector('[data-order-notice]'); if (n) { if (!n.textContent.trim()) n.textContent = t('checkout.notice'); n.hidden = false; }
   });
   document.addEventListener('languagechange', update);
   update();
