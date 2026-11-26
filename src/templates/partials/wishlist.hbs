@@ -7,7 +7,7 @@
     <span class="checkout-stripes" aria-hidden="true"></span>
     <p class="checkout-description" data-i18n="checkout.description" id="wishlist-description">Choose your plan and review your order.</p>
   </header>
-  <form data-order-form class="checkout-grid">
+  <form data-order-form class="checkout-grid" novalidate>
     <div class="checkout-steps checkout-panel">
       <svg class="checkout-panel__frame" viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true"><path d="M42 1H990Q999 1 999 10V945L945 999H10Q1 999 1 990V65Z" vector-effect="non-scaling-stroke"/></svg>
       <div class="checkout-step">
@@ -30,7 +30,6 @@
         <div class="step-content payment-select">
           <select id="order-payment" name="payment" required>
             <option value="" data-i18n="checkout.selectPayment">Select a payment method</option>
-            <option value="demo" data-i18n="checkout.demoPayment">Demo — no payment</option>
           </select>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 9 7 7 7-7" fill="none" stroke="currentColor" stroke-width="2"/></svg>
         </div>
@@ -46,7 +45,8 @@
         <div class="order-total"><dt data-i18n="checkout.total">Total</dt><dd data-order-total>€1</dd></div>
       </dl>
       <button class="button checkout-continue" type="submit"><span data-i18n="checkout.continue">Continue</span></button>
-      <p data-i18n="checkout.notice" data-order-notice role="status" hidden>Demo only. No payment has been made.</p>
+      <p class="portal-consent-note">By continuing, you agree to our <a href="./terms.html">Terms of Use</a> and <a href="./privacy.html">Privacy Policy</a>.</p>
+      <p data-order-notice data-portal-status role="status" aria-live="polite" hidden></p>
     </aside>
   </form>
 </dialog>

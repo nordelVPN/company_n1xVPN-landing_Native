@@ -44,7 +44,7 @@ module.exports = {
     preview: {
       headingLines: ['Ready when', 'you are.'],
       status: 'Not connected',
-      connectedStatus: 'Connected (preview)',
+      connectedStatus: 'Connected',
       connect: 'Connect',
       disconnect: 'Disconnect',
       serverLabel: 'Selected server',
@@ -52,8 +52,8 @@ module.exports = {
       serverValue: 'Automatic',
       connectedServerValue: 'Netherlands • Amsterdam',
       viewServers: 'View all servers',
-      connectedNote: 'Demo only — your network connection has not changed.',
-      demoNotice: 'This is a concept preview. Server list and accounts are not available yet.'
+      connectedNote: 'Interactive interface preview — download the N1X VPN app to connect your device.',
+      demoNotice: 'Download the N1X VPN app or open your account to view live servers.'
     },
     stripHeadingLines: ['Simple VPN', 'for everyday', 'online life.'],
     features: [
