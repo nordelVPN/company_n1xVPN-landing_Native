@@ -255,3 +255,16 @@ dialog.checkout-dialog {
   .checkout-dialog .order-summary dl > div { gap: 12px; }
   .checkout-dialog .checkout-continue { min-height: 58px; }
 }
+
+.checkout-dialog .checkout-actions {
+  display: grid;
+  gap: 12px;
+  margin-top: auto;
+}
+.checkout-dialog .checkout-wishlist-btn {
+  width: 100%;
+  min-height: 50px;
+  padding: 10px 20px;
+  text-align: center;
+  font: italic 700 clamp(1rem, 1.35vw, 1.2rem)/1.2 Exo, sans-serif;
+}

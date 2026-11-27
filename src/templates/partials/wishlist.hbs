@@ -25,16 +25,6 @@
           <label class="plan-choice"><input type="radio" name="order-plan" value="yearly" data-price="€55"><span data-i18n="pricing.plans.3.name">12 months</span></label>
         </div>
       </fieldset>
-      <div class="checkout-step">
-        <label for="order-payment" class="step-title"><span data-i18n="checkout.payment">3. Choose a payment method</span></label>
-        <div class="step-content payment-select">
-          <select id="order-payment" name="payment" required>
-            <option value="" data-i18n="checkout.selectPayment">Select a payment method</option>
-            <option value="card" data-i18n="checkout.demoPayment">Card or instant payment</option>
-          </select>
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 9 7 7 7-7" fill="none" stroke="currentColor" stroke-width="2"/></svg>
-        </div>
-      </div>
     </div>
     <aside class="order-summary checkout-panel">
       <svg class="checkout-panel__frame" viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true"><path d="M42 1H990Q999 1 999 10V945L945 999H10Q1 999 1 990V65Z" vector-effect="non-scaling-stroke"/></svg>
@@ -45,7 +35,11 @@
         <div><dt data-i18n="checkout.billing">Billing</dt><dd data-order-billing>Once for a new user</dd></div>
         <div class="order-total"><dt data-i18n="checkout.total">Total</dt><dd data-order-total>€1</dd></div>
       </dl>
-      <button class="button checkout-continue" type="submit"><span data-i18n="checkout.continue">Continue</span></button>
+      <div class="checkout-actions">
+        <button class="button checkout-continue" type="button" data-plan-action="register"><span>Create account</span></button>
+        <button class="outline-button checkout-wishlist-btn" type="button" data-plan-action="wishlist"><span>Add to wishlist</span></button>
+        <a class="outline-button checkout-wishlist-btn" href="#" target="_blank" rel="noopener noreferrer" data-plan-dialog-tg hidden><span>Open Telegram Bot</span></a>
+      </div>
       <p class="portal-consent-note">By continuing, you agree to our <a href="./terms.html">Terms of Use</a> and <a href="./privacy.html">Privacy Policy</a>.</p>
       <p data-order-notice data-portal-status role="status" aria-live="polite" hidden></p>
     </aside>

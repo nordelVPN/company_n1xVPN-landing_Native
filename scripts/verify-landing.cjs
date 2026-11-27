@@ -145,8 +145,7 @@ function comparison(actualPath, referencePath, name) {
      assert.equal(await page.locator('[data-order-billing]').textContent(),dict[lang]['checkout.once']);
      await page.locator('[value=yearly]').check();
      await page.locator('#order-email').fill('demo@example.com');
-     await page.selectOption('#order-payment','card');
-     await page.locator('[data-order-form] button[type=submit]').click();
+     await page.locator('[data-order-form] [data-plan-action="wishlist"]').click();
      assert(await page.locator('[data-order-notice]').isVisible());
      assert(await page.locator('dialog').evaluate(el=>el.open && el.scrollWidth<=el.clientWidth+1));
      for(let i=0;i<10;i++)await page.keyboard.press('Tab');

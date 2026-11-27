@@ -2,10 +2,71 @@
 'use strict';
 
 var sdkFactory = require('./vpn-portal-sdk');
+var QRCore = require('qrcode/lib/core/qrcode');
+function createQrMatrix(text) {
+  return QRCore.create(text, { errorCorrectionLevel: 'M' }).modules;
+}
 var sdk = sdkFactory.createVpnPortalSdk({ brandSlug: 'n1x' });
 sdkFactory.syncAccountNavLinks(sdk);
 var siteConfigPromise = sdk.getSiteConfig();
-var cachedPlans = [];
+var N1X_DEFAULT_PLANS = [
+  { plan_code: 'trial', name: 'Trial - 1 month', price_minor: 100 },
+  { plan_code: 'monthly', name: '1 Month', price_minor: 700 },
+  { plan_code: 'quarterly', name: '3 Months', price_minor: 1500 },
+  { plan_code: 'yearly', name: '12 Months', price_minor: 5500 }
+];
+var cachedPlans = N1X_DEFAULT_PLANS.slice();
+var currentSiteConfig = null;
+var cachedClientEmail = '';
+function syncN1xWishlistBotUrls(cfg) {
+  if (!cfg || !sdkFactory.isSiteInWishlistMode(cfg)) return;
+  var lang = sdkFactory.getCurrentSiteLanguage();
+  document.querySelectorAll('[data-wishlist-open], [data-select-plan]').forEach(function (el) {
+    var planCode = el.getAttribute('data-select-plan') || '';
+    el.setAttribute('data-wishlist-bot-url', sdkFactory.buildWishlistBotUrl(cfg, { planCode: planCode, language: lang }));
+  });
+}
+siteConfigPromise.then(function (cfg) {
+  currentSiteConfig = cfg;
+  var isWishlist = sdkFactory.isSiteInWishlistMode(cfg);
+  document.documentElement.dataset.launchMode = isWishlist ? 'wishlist_only' : 'live';
+  if (isWishlist) {
+    var openDlg = document.querySelector('dialog[data-wishlist]');
+    if (openDlg && openDlg.open) openDlg.close();
+    syncN1xWishlistBotUrls(cfg);
+  }
+});
+document.addEventListener('languagechange', function () {
+  if (currentSiteConfig) syncN1xWishlistBotUrls(currentSiteConfig);
+});
+
+document.addEventListener('click', function (e) {
+  var btn = e.target && e.target.closest && e.target.closest('[data-wishlist-open], [data-select-plan]');
+  if (!btn) return;
+  var explicitPlan = btn.getAttribute('data-select-plan') || '';
+  if (currentSiteConfig) {
+    if (!sdkFactory.isSiteInWishlistMode(currentSiteConfig)) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    sdkFactory.openWishlistBot(currentSiteConfig, {
+      planCode: explicitPlan,
+      language: sdkFactory.getCurrentSiteLanguage()
+    });
+    return;
+  }
+  e.preventDefault();
+  e.stopImmediatePropagation();
+  siteConfigPromise.then(function (cfg) {
+    if (sdkFactory.isSiteInWishlistMode(cfg)) {
+      sdkFactory.openWishlistBot(cfg, {
+        planCode: explicitPlan,
+        language: sdkFactory.getCurrentSiteLanguage()
+      });
+    } else {
+      btn.click();
+    }
+  });
+}, true);
 var orderWishlistCtrl = null;
 
 function uiMsg() {
@@ -73,125 +134,118 @@ if (!isAccountPage) {
 }
 
 var orderForm = document.querySelector('[data-order-form]');
-function switchN1xCheckoutToWishlist(cfg, planCode) {
-  if (!orderForm) return;
-  orderForm.hidden = true;
-  var dialog = orderForm.closest('dialog') || orderForm.parentNode;
-  if (!dialog) return;
-  dialog.querySelectorAll('[data-payment-providers]').forEach(function (el) { el.hidden = true; });
-  var host = dialog.querySelector('[data-wishlist-checkout-host]');
-  if (!host) {
-    host = document.createElement('div');
-    host.setAttribute('data-wishlist-checkout-host', '');
-    host.style.marginTop = '1rem';
-    dialog.appendChild(host);
-  }
-  var selected = orderForm.querySelector('[name="order-plan"]:checked');
-  orderWishlistCtrl = sdkFactory.renderWishlistCard(sdk, host, {
-    siteConfig: cfg,
-    planCode: planCode || (selected ? selected.value : ''),
-    plans: cachedPlans,
-    sourcePage: 'checkout',
-    variant: 'checkout'
-  });
+function findN1xPlan(code) {
+  var clean = String(code || '').trim();
+  return cachedPlans.find(function (p) { return p.plan_code === clean; }) ||
+    N1X_DEFAULT_PLANS.find(function (p) { return p.plan_code === clean; }) ||
+    N1X_DEFAULT_PLANS[2];
 }
 
 if (orderForm) {
-  document.addEventListener('click', function (e) {
-    var pickBtn = e.target && e.target.closest && e.target.closest('[data-select-plan]');
-    if (pickBtn && orderWishlistCtrl) {
-      orderWishlistCtrl.setPlanCode(pickBtn.getAttribute('data-select-plan') || '');
-    }
-  });
-  siteConfigPromise.then(function (cfg) {
-    if (!sdkFactory.isSiteCheckoutEnabled(cfg)) {
-      switchN1xCheckoutToWishlist(cfg, '');
-    }
-  });
-}
-
-if (orderForm && sdk.mode === 'live') {
   sdkFactory.bindFormValidationClear(orderForm);
-  var legacyPayLabel = orderForm.querySelector('label[for="order-payment"]');
-  var legacyPaySelect = orderForm.querySelector('#order-payment');
-  if (legacyPayLabel) legacyPayLabel.hidden = true;
-  if (legacyPaySelect) {
-    legacyPaySelect.disabled = true;
-    var legacyWrap = legacyPaySelect.closest('.select-wrap, .field') || legacyPaySelect;
-    legacyWrap.hidden = true;
-  }
-  var getXProvider = function () { return null; };
-  var xProviderHost = orderForm.querySelector('[data-payment-providers]');
-  if (!xProviderHost) {
-    xProviderHost = document.createElement('div');
-    xProviderHost.className = 'payment-providers';
-    xProviderHost.setAttribute('data-payment-providers', '');
-    xProviderHost.hidden = true;
-    var xSubmit = orderForm.querySelector('button[type="submit"]');
-    if (xSubmit && xSubmit.parentNode) {
-      xSubmit.parentNode.insertBefore(xProviderHost, xSubmit);
-    } else {
-      orderForm.appendChild(xProviderHost);
-    }
-  }
-  siteConfigPromise.then(function (cfg) {
-    if (!sdkFactory.isSiteCheckoutEnabled(cfg)) {
-      xProviderHost.hidden = true;
-      return;
-    }
-    sdkFactory.mountPaymentProviderSelector(sdk, xProviderHost).then(function (getter) {
-      if (typeof getter === 'function') getXProvider = getter;
-    });
-  });
+  var syncN1xDialogLabels = function () {
+    var ui = sdkFactory.getWishlistUiText();
+    var regBtn = orderForm.querySelector('[data-plan-action="register"] span');
+    var wishBtn = orderForm.querySelector('[data-plan-action="wishlist"] span');
+    var tgBtn = orderForm.querySelector('[data-plan-dialog-tg] span');
+    if (regBtn) regBtn.textContent = ui.registerBtn;
+    if (wishBtn) wishBtn.textContent = ui.wishlistBtn;
+    if (tgBtn) tgBtn.textContent = ui.telegramBtn;
+  };
+  syncN1xDialogLabels();
+  document.addEventListener('languagechange', syncN1xDialogLabels);
 
-  orderForm.addEventListener('submit', function (e) {
-    e.preventDefault();
+  window.__n1xPreparePlanDialog = function () {
+    syncN1xDialogLabels();
     sdkFactory.clearFieldErrors(orderForm);
     var notice = orderForm.querySelector('[data-order-notice]');
-    var submitBtn = orderForm.querySelector('button[type="submit"]');
-    var selected = orderForm.querySelector('[name="order-plan"]:checked');
+    if (notice) sdkFactory.clearPortalStatus(notice);
+    var tgLink = orderForm.querySelector('[data-plan-dialog-tg]');
+    if (tgLink) tgLink.hidden = true;
+    if (sdk.isAuthenticated() && orderForm.email && !orderForm.email.value) {
+      if (cachedClientEmail) {
+        orderForm.email.value = cachedClientEmail;
+      } else {
+        sdk.getMe().then(function (me) {
+          if (me && me.client && me.client.email && !orderForm.email.value) {
+            cachedClientEmail = me.client.email;
+            orderForm.email.value = cachedClientEmail;
+          }
+        }).catch(function () {});
+      }
+    }
+  };
+
+  var regActionBtn = orderForm.querySelector('[data-plan-action="register"]');
+  var wishActionBtn = orderForm.querySelector('[data-plan-action="wishlist"]');
+  var noticeEl = orderForm.querySelector('[data-order-notice]');
+  var tgEl = orderForm.querySelector('[data-plan-dialog-tg]');
+
+  var submitN1xPlanDialog = function (intent, triggerBtn) {
+    sdkFactory.clearFieldErrors(orderForm);
+    var ui = sdkFactory.getWishlistUiText();
     var emailVal = orderForm.email ? orderForm.email.value.trim() : '';
     if (!isValidEmail(emailVal)) {
-      var errMsg = uiMsg().invalidEmail;
+      var errMsg = ui.emailInvalid || uiMsg().invalidEmail;
       sdkFactory.setFieldErrors(orderForm, { email: errMsg });
-      sdkFactory.setPortalStatus(notice, errMsg, 'error');
+      sdkFactory.setPortalStatus(noticeEl, errMsg, 'error', { scroll: false });
       return;
     }
-    if (!sdk.isAuthenticated()) {
-      window.location.href = './login.html';
+    var selected = orderForm.querySelector('[name="order-plan"]:checked');
+    var plan = findN1xPlan(selected ? selected.value : 'quarterly');
+    var source = intent === 'register' ? 'plan_dialog_register' : 'plan_dialog_wishlist';
+    var meta = {
+      intent: intent,
+      source_page: 'index',
+      plan_name: plan.name,
+      price_minor: plan.price_minor,
+      currency: 'EUR'
+    };
+
+    if (intent === 'register') {
+      sdkFactory.withFormBusy(orderForm, triggerBtn, function () {
+        var timeout = new Promise(function (resolve) { window.setTimeout(resolve, 1500); });
+        return Promise.race([
+          sdk.joinWishlist({ email: emailVal, planCode: plan.plan_code, source: source, meta: meta }).catch(function () { return null; }),
+          timeout
+        ]).then(function () {
+          if (sdk.isAuthenticated()) {
+            window.location.href = './account.html?plan=' + encodeURIComponent(plan.plan_code);
+            return;
+          }
+          sdk.savePlanSelectionHandoff({ email: emailVal, planCode: plan.plan_code });
+          window.location.href = './create-account.html?plan=' + encodeURIComponent(plan.plan_code);
+        });
+      }, { loadingText: ui.submitting });
       return;
     }
-    var returnUrl = new URL('./account.html', window.location.href).href;
-    var cancelUrl = new URL('./index.html?status=cancelled', window.location.href).href;
-    sdkFactory.setPortalStatus(notice, uiMsg().loading, 'loading', { scroll: false });
-    sdkFactory.withFormBusy(orderForm, submitBtn, function () {
-      return sdk.checkout({
-        plan_code: selected ? selected.value : 'quarterly',
-        provider: getXProvider(),
-        payment_method: (orderForm.payment && orderForm.payment.value) || 'card',
-        return_url: returnUrl,
-        cancel_url: cancelUrl
+
+    sdkFactory.setPortalStatus(noticeEl, ui.submitting, 'loading', { scroll: false });
+    sdkFactory.withFormBusy(orderForm, triggerBtn, function () {
+      return sdk.joinWishlist({
+        email: emailVal,
+        planCode: plan.plan_code,
+        source: source,
+        meta: meta
       }).then(function (res) {
-        var msg = res && res.checkout && res.checkout.mode === 'mock'
-          ? 'Confirm test payment to activate your VPN key.'
-          : 'Redirecting to payment provider...';
-        sdkFactory.setPortalStatus(notice, msg, 'success');
-        var dialog = orderForm.closest('dialog');
-        if (dialog && dialog.open && res && res.checkout && res.checkout.mode === 'mock') {
-          dialog.close();
+        var msg = (res && res.already_registered) ? (ui.planUpdated || ui.successExisting) : ui.successNew;
+        sdkFactory.setPortalStatus(noticeEl, msg, (res && res.already_registered) ? 'info' : 'success', { scroll: false });
+        if (tgEl && currentSiteConfig && currentSiteConfig.wishlist_bot_url) {
+          tgEl.href = currentSiteConfig.wishlist_bot_url;
+          tgEl.hidden = false;
         }
-        sdkFactory.handleCheckoutResponse(sdk, res);
       }).catch(function (err) {
-        if (err && (err.code === 'SITE_IN_WISHLIST_MODE' || err.status === 403)) {
-          sdk.getSiteConfig({ force: true }).then(function (cfg) {
-            switchN1xCheckoutToWishlist(cfg, selected ? selected.value : '');
-          });
-          return;
-        }
         if (err && err.details) sdkFactory.setFieldErrors(orderForm, err.details);
-        sdkFactory.setPortalStatus(notice, sdkFactory.formatPortalApiError(err, 'Checkout failed.'), 'error');
+        sdkFactory.setPortalStatus(noticeEl, sdkFactory.formatPortalApiError(err, ui.errorGeneric), 'error', { scroll: false });
       });
-    });
+    }, { loadingText: ui.submitting });
+  };
+
+  if (regActionBtn) regActionBtn.addEventListener('click', function () { submitN1xPlanDialog('register', regActionBtn); });
+  if (wishActionBtn) wishActionBtn.addEventListener('click', function () { submitN1xPlanDialog('wishlist', wishActionBtn); });
+  orderForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    submitN1xPlanDialog('register', regActionBtn || wishActionBtn);
   });
 }
 
@@ -238,11 +292,16 @@ if (loginForm && sdk.mode === 'live') {
 var registerForm = document.querySelector('[data-portal-register]');
 if (registerForm) {
   sdkFactory.bindFormValidationClear(registerForm);
-  siteConfigPromise.then(function (cfg) {
-    if (sdkFactory.isSiteInWishlistMode(cfg)) {
-      sdkFactory.mountRegisterWishlistBanner(registerForm, cfg);
-    }
-  });
+  var regParams = new URLSearchParams(window.location.search || '');
+  var handoff = sdk.consumePlanSelectionHandoff() || {};
+  var selectedPlanCode = String(regParams.get('plan') || handoff.planCode || '').trim();
+  if (handoff.email && registerForm.email && !registerForm.email.value) {
+    registerForm.email.value = handoff.email;
+  }
+  if (selectedPlanCode) {
+    sdkFactory.mountSelectedPlanBanner(registerForm, findN1xPlan(selectedPlanCode));
+  }
+  // TASK-027: Pre-launch / Join Wishlist banner intentionally omitted on create-account.html.
   var rStatus = registerForm.querySelector('[data-portal-status]');
   var rBtn = registerForm.querySelector('button[type="submit"]');
   registerForm.addEventListener('submit', function (e) {
@@ -268,10 +327,13 @@ if (registerForm) {
         email: email,
         password: password,
         password_confirmation: confirm,
-        display_name: registerForm.display_name ? registerForm.display_name.value.trim() : ''
+        display_name: registerForm.display_name ? registerForm.display_name.value.trim() : '',
+        plan_code: selectedPlanCode || undefined
       }).then(function () {
         sdkFactory.setPortalStatus(rStatus, 'Account created. Redirecting...', 'success');
-        window.location.href = './account.html';
+        window.location.href = selectedPlanCode
+          ? ('./account.html?plan=' + encodeURIComponent(selectedPlanCode))
+          : './account.html';
       }).catch(function (err) {
         if (err && err.details) sdkFactory.setFieldErrors(registerForm, err.details);
         sdkFactory.setPortalStatus(rStatus, sdkFactory.formatPortalApiError(err, 'Registration failed.'), 'error');
@@ -349,9 +411,10 @@ if (accountRoot) {
   if (sdk.mode === 'live' && !sdk.isAuthenticated()) {
     window.location.replace('./login.html');
   } else {
+    var accountTabs = sdkFactory.initAccountTabs(accountRoot, { defaultTab: 'overview' });
     var accessKey = '';
     var revealed = false;
-    var statusEl = accountRoot.querySelector('#overview [data-portal-status]') || accountRoot.querySelector('[data-portal-status]');
+    var statusEl = accountRoot.querySelector('.account-heading [data-portal-status]') || accountRoot.querySelector('[data-portal-status]');
     var devicesStatusEl = accountRoot.querySelector('[data-devices-status]');
     var vpnStatusEl = accountRoot.querySelector('[data-vpn-status]');
     var keyEl = accountRoot.querySelector('[data-vpn-key]');
@@ -400,6 +463,8 @@ if (accountRoot) {
       });
     };
 
+    var vpnConnectCtrl = null;
+
     var renderServers = function (servers) {
       if (!serversEl) return;
       serversEl.innerHTML = '';
@@ -414,6 +479,14 @@ if (accountRoot) {
         tr.children[1].textContent = sdkFactory.formatServerStatusAndLoad(srv);
         tr.children[2].textContent = srv.ping_ms ? srv.ping_ms + ' ms' : '—';
         tr.children[3].textContent = sdkFactory.formatServerProtocolsAndTags(srv);
+        sdkFactory.appendServerVlessActions(tr.children[3], srv, {
+          statusEl: vpnStatusEl || statusEl,
+          onSelectQr: function (selectedSrv) {
+            if (vpnConnectCtrl && typeof vpnConnectCtrl.selectServerVless === 'function') {
+              vpnConnectCtrl.selectServerVless(selectedSrv);
+            }
+          }
+        });
         serversEl.appendChild(tr);
       });
     };
@@ -426,7 +499,7 @@ if (accountRoot) {
         : Promise.resolve();
 
       return ready.then(function () {
-        return Promise.all([sdk.getMe(), sdk.getSubscription(), sdk.getBillingHistory(), siteConfigPromise]);
+        return Promise.all([sdk.getMe(), sdk.getSubscription(), Promise.resolve({ payments: [] }), siteConfigPromise]);
       }).then(function (results) {
         var me = results[0];
         var sub = results[1] && results[1].subscription;
@@ -435,31 +508,98 @@ if (accountRoot) {
         var serversAllowed = sdkFactory.isSiteServersEnabled(siteCfg);
         sdkFactory.revealAuthGate();
         if (me && me.client) {
-          var emailEl = accountRoot.querySelector('[data-profile-email]');
+          accountRoot.querySelectorAll('[data-profile-email]').forEach(function (el) {
+            el.textContent = me.client.email;
+          });
           var nameInput = accountRoot.querySelector('[name="display_name"]');
-          if (emailEl) emailEl.textContent = me.client.email;
           if (nameInput) nameInput.value = me.client.display_name || '';
         }
+        var accCheckoutForm = accountRoot.querySelector('[data-account-checkout-form]');
+        if (accCheckoutForm && sdkFactory.isSiteCheckoutEnabled(siteCfg)) {
+          accCheckoutForm.hidden = false;
+          var urlPlan = new URLSearchParams(window.location.search || '').get('plan');
+          var planSelect = accCheckoutForm.querySelector('[data-account-plan-select]');
+          if (planSelect && urlPlan && planSelect.querySelector('option[value="' + urlPlan + '"]')) {
+            planSelect.value = urlPlan;
+          }
+          var providerHost = accCheckoutForm.querySelector('[data-payment-providers]');
+          if (providerHost && !accCheckoutForm.__providersMounted) {
+            accCheckoutForm.__providersMounted = true;
+            var getAccProvider = function () { return null; };
+            sdkFactory.mountPaymentProviderSelector(sdk, providerHost).then(function (getter) {
+              if (typeof getter === 'function') getAccProvider = getter;
+            });
+            var chkStatus = accCheckoutForm.querySelector('[data-account-checkout-status]') || statusEl;
+            var chkBtn = accCheckoutForm.querySelector('button[type="submit"]');
+            accCheckoutForm.addEventListener('submit', function (ev) {
+              ev.preventDefault();
+              var chosenPlan = (planSelect && planSelect.value) || 'quarterly';
+              var returnUrl = new URL('./account.html', window.location.href).href;
+              var cancelUrl = new URL('./account.html?status=cancelled', window.location.href).href;
+              sdkFactory.setPortalStatus(chkStatus, uiMsg().loading, 'loading', { scroll: false });
+              sdkFactory.withFormBusy(accCheckoutForm, chkBtn, function () {
+                return sdk.checkout({
+                  plan_code: chosenPlan,
+                  provider: getAccProvider(),
+                  return_url: returnUrl,
+                  cancel_url: cancelUrl
+                }).then(function (res) {
+                  sdkFactory.handleCheckoutResponse(sdk, res);
+                }).catch(function (err) {
+                  sdkFactory.setPortalStatus(chkStatus, sdkFactory.formatPortalApiError(err, 'Checkout failed.'), 'error');
+                });
+              });
+            });
+          }
+        }
+        var tabVpn = accountRoot.querySelector('#tab-vpn-access');
+        var panelVpn = accountRoot.querySelector('#panel-vpn-access');
+        var tabDev = accountRoot.querySelector('#tab-devices');
+        var panelDev = accountRoot.querySelector('#panel-devices');
         if (!serversAllowed) {
-          var vpnAccessCard = accountRoot.querySelector('#vpn-access');
-          var devicesCard = accountRoot.querySelector('#devices');
-          if (vpnAccessCard) vpnAccessCard.hidden = true;
-          if (devicesCard) devicesCard.hidden = true;
-          sdkFactory.mountAccountWaitlistCard(vpnAccessCard || accountRoot, siteCfg, { className: 'account-card' });
+          if (tabVpn) tabVpn.hidden = true;
+          if (panelVpn) panelVpn.hidden = true;
+          if (tabDev) tabDev.hidden = true;
+          if (panelDev) panelDev.hidden = true;
+          if (accountTabs && typeof accountTabs.refresh === 'function') {
+            accountTabs.refresh();
+          }
+          var overviewPanel = accountRoot.querySelector('#panel-overview');
+          var contentHost = accountRoot.querySelector('.account-content');
+          if (overviewPanel) {
+            sdkFactory.mountAccountWaitlistCard(overviewPanel, siteCfg, { className: 'account-card' });
+          } else {
+            sdkFactory.mountAccountWaitlistCard(contentHost || accountRoot, siteCfg, { prepend: true, className: 'account-card' });
+          }
+        } else {
+          if (tabVpn) tabVpn.hidden = false;
+          if (tabDev) tabDev.hidden = false;
+          if (accountTabs && typeof accountTabs.refresh === 'function') {
+            accountTabs.refresh();
+          }
         }
         if (sub) {
-          var planEl = accountRoot.querySelector('[data-sub-plan]');
-          var subStatusEl = accountRoot.querySelector('[data-sub-status]');
-          var expEl = accountRoot.querySelector('[data-sub-expires]');
-          if (planEl) planEl.textContent = sub.plan_name + ' (' + sub.access_tier + ')';
-          if (subStatusEl) subStatusEl.textContent = sub.status;
-          if (expEl) expEl.textContent = sub.expires_at ? new Date(sub.expires_at).toLocaleDateString() : '—';
+          accountRoot.querySelectorAll('[data-sub-plan]').forEach(function (el) {
+            el.textContent = sub.plan_name + ' (' + sub.access_tier + ')';
+          });
+          accountRoot.querySelectorAll('[data-sub-status]').forEach(function (el) {
+            el.textContent = sub.status;
+          });
+          accountRoot.querySelectorAll('[data-sub-expires]').forEach(function (el) {
+            el.textContent = sub.expires_at ? new Date(sub.expires_at).toLocaleDateString() : '—';
+          });
           accessKey = sub.access_key || '';
           if (keyEl) keyEl.textContent = revealed ? accessKey : maskKey(accessKey);
           if (accessKey && serversAllowed) {
             sdk.getBootstrap(accessKey).then(function (boot) {
+              var connectAnchor = (keyEl && keyEl.parentElement) || accountRoot.querySelector('#vpn-access');
+              vpnConnectCtrl = sdkFactory.mountVpnConnectPanel(connectAnchor, boot, {
+                createQrMatrix: createQrMatrix,
+                placement: 'after'
+              });
               renderServers((boot && boot.servers) || []);
             }).catch(function (err) {
+              if (vpnConnectCtrl) { vpnConnectCtrl.hide(); vpnConnectCtrl = null; }
               if (err.code === 'KEY_EXPIRED') {
                 sdkFactory.setPortalStatus(statusEl, uiMsg().keyExpired, 'warning');
               } else if (err.code === 'KEY_REVOKED') {
@@ -474,6 +614,7 @@ if (accountRoot) {
             });
             sdk.getDevices(accessKey).then(renderDevices).catch(function () { /* ignore */ });
           } else {
+            if (vpnConnectCtrl) { vpnConnectCtrl.hide(); vpnConnectCtrl = null; }
             renderServers([]);
             renderDevices({ limit: 5, devices: [] });
           }
@@ -499,6 +640,7 @@ if (accountRoot) {
         }
       }).catch(function (err) {
         if (sdk.mode === 'live' && (!sdk.isAuthenticated() || (err && (err.status === 401 || err.code === 'UNAUTHORIZED')))) {
+          sdk.clearSession();
           window.location.replace('./login.html');
           return;
         }
