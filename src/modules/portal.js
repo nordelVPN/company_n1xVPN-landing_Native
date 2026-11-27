@@ -9,6 +9,7 @@ function createQrMatrix(text) {
 var sdk = sdkFactory.createVpnPortalSdk({ brandSlug: 'n1x' });
 sdkFactory.syncAccountNavLinks(sdk);
 var siteConfigPromise = sdk.getSiteConfig();
+sdkFactory.bindPageBoot(siteConfigPromise);
 var N1X_DEFAULT_PLANS = [
   { plan_code: 'trial', name: 'Trial - 1 month', price_minor: 100 },
   { plan_code: 'monthly', name: '1 Month', price_minor: 700 },
@@ -28,6 +29,7 @@ function syncN1xWishlistBotUrls(cfg) {
 }
 siteConfigPromise.then(function (cfg) {
   currentSiteConfig = cfg;
+  sdkFactory.syncAccountNavLinks(sdk);
   var isWishlist = sdkFactory.isSiteInWishlistMode(cfg);
   document.documentElement.dataset.launchMode = isWishlist ? 'wishlist_only' : 'live';
   if (isWishlist) {
