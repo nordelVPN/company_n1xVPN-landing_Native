@@ -109,49 +109,49 @@
       "name": "home",
       "width": 1672,
       "height": 941,
-      "meanChannelDifference": 38.71483495111075,
+      "meanChannelDifference": 37.34999966102097,
       "note": "Diagnostic only: no visual acceptance threshold."
     },
     {
       "name": "the-app",
       "width": 1672,
       "height": 941,
-      "meanChannelDifference": 44.91089872662528,
+      "meanChannelDifference": 45.91607472453717,
       "note": "Diagnostic only: no visual acceptance threshold."
     },
     {
       "name": "why-n1x",
       "width": 1672,
       "height": 941,
-      "meanChannelDifference": 39.90636149232128,
+      "meanChannelDifference": 38.86398699506955,
       "note": "Diagnostic only: no visual acceptance threshold."
     },
     {
       "name": "plans",
       "width": 1671,
       "height": 941,
-      "meanChannelDifference": 39.1812679170183,
+      "meanChannelDifference": 39.91115215211968,
       "note": "Diagnostic only: no visual acceptance threshold."
     },
     {
       "name": "support",
       "width": 1671,
       "height": 941,
-      "meanChannelDifference": 52.67798198647385,
+      "meanChannelDifference": 52.55500714083871,
       "note": "Diagnostic only: no visual acceptance threshold."
     },
     {
       "name": "account",
       "width": 1672,
       "height": 941,
-      "meanChannelDifference": 27.380475146905038,
+      "meanChannelDifference": 24.088178614829992,
       "note": "Diagnostic only: no visual acceptance threshold."
     },
     {
       "name": "checkout",
       "width": 1672,
       "height": 941,
-      "meanChannelDifference": 28.437145660983685,
+      "meanChannelDifference": 32.81130499299161,
       "note": "Diagnostic only: no visual acceptance threshold."
     }
   ],
